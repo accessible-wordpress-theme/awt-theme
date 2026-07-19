@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "g10 + g90 (softest contrast)",
+	"settings": {
+		"custom": {
+			"ui-shell": {
+				"themeScope": {
+					"light": "g10",
+					"dark": "g90"
+				}
+			}
+		}
+	}
+}

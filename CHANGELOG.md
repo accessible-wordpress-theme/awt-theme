@@ -1,0 +1,29 @@
+# Changelog
+
+<!-- Authoring format (parsed by scripts/release.js at release time — see the
+     Stage 1 spec, "Changelog communication"):
+
+     ## <version> — <YYYY-MM-DD>
+     ### [Severity]        one of: [Security] [A11y] [Breaking] [New] [Improvement]
+     - One entry per bullet.
+
+     markdownlint enforces the structure in CI. Newest release first.
+     The Unreleased section accumulates entries between releases. -->
+
+## Unreleased
+
+### [Improvement]
+
+- Automatic breadcrumbs now render through the Breadcrumb block when the AWT
+  Blocks plugin is active, so their Carbon styling (including the "/"
+  separators) loads on every page — not just pages that already contain a
+  Breadcrumb block. The trail no longer shows a separator after the current
+  page.
+
+### [New]
+
+- Initial Stage 1 release of the AWT theme: Carbon Design System foundation
+  CSS, eight page templates, header/footer/sidebar template parts, block
+  patterns, style variations (light + dark scope pairs), the AWT Settings
+  screen with welcome wizard, automatic breadcrumbs, and visitor
+  color-scheme support.

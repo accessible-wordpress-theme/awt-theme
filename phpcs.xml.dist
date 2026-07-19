@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<ruleset name="AWT Theme">
+	<description>WordPress Coding Standards for the AWT theme.</description>
+
+	<file>.</file>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/assets/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+	<arg name="parallel" value="8"/>
+
+	<config name="minimum_wp_version" value="6.6"/>
+	<config name="testVersion" value="8.1-"/>
+
+	<rule ref="WordPress">
+		<!-- Stylistic choices the codebase deliberately differs on. -->
+		<exclude name="Squiz.Commenting.FileComment"/>
+		<exclude name="Squiz.Commenting.ClassComment"/>
+		<!-- Yoda conditions are not required by the WP.org review and hurt
+		     readability; the codebase uses natural comparison order. -->
+		<exclude name="WordPress.PHP.YodaConditions"/>
+	</rule>
+
+	<!-- The design-system layer (interface + registry + per-system classes)
+	     deliberately keeps WP-core-agnostic file names (carbon.php,
+	     registry.php) that the spec + code comments reference throughout. -->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>/inc/design-system/*</exclude-pattern>
+	</rule>
+	<rule ref="Universal.Files.SeparateFunctionsFromOO">
+		<exclude-pattern>/inc/design-system/*</exclude-pattern>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="awt"/>
+			</property>
+		</properties>
+	</rule>
+</ruleset>

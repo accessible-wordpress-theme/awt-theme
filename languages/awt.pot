@@ -1,0 +1,2347 @@
+# Copyright (C) 2026 AWT
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: AWT 2026.01.0-stage1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/awt\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-07-19T08:19:34+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: awt\n"
+
+#. Theme Name of the theme
+#. Author of the theme
+#: style.css
+#: inc/admin-settings-page.php:55
+msgid "AWT"
+msgstr ""
+
+#. Theme URI of the theme
+#. Author URI of the theme
+#: style.css
+msgid "https://accessiblewordpresstheme.com"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "An accessibility-first block theme built on IBM's open-source Carbon Design System. Four paired light/dark style variations, a visitor-facing color scheme switch that works with page caching out of the box, and 42 ready-made patterns — every one reviewed against WCAG 2.2 AA in both light and dark mode. Designed for the AWT Blocks plugin, which adds 58 matching accessible blocks and an accessibility checker inside the editor."
+msgstr ""
+
+#: functions.php:240
+msgid "AWT — Sections"
+msgstr ""
+
+#: functions.php:309
+msgctxt "template name"
+msgid "Page"
+msgstr ""
+
+#: functions.php:681
+#: inc/admin-settings-page.php:1502
+msgid "Skip to main content"
+msgstr ""
+
+#: inc/admin-settings-page.php:54
+#: inc/admin-settings-page.php:160
+msgid "AWT Settings"
+msgstr ""
+
+#: inc/admin-settings-page.php:81
+#: inc/welcome-wizard.php:169
+msgid "Identity"
+msgstr ""
+
+#: inc/admin-settings-page.php:85
+msgid "Design system"
+msgstr ""
+
+#: inc/admin-settings-page.php:93
+msgid "Navigation"
+msgstr ""
+
+#: inc/admin-settings-page.php:97
+msgid "Custom code"
+msgstr ""
+
+#: inc/admin-settings-page.php:101
+#: inc/admin-settings-page.php:983
+#: inc/admin-settings-page.php:1717
+msgid "Custom CSS"
+msgstr ""
+
+#: inc/admin-settings-page.php:105
+msgid "Tools"
+msgstr ""
+
+#: inc/admin-settings-page.php:147
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: inc/admin-settings-page.php:164
+msgid "Settings saved."
+msgstr ""
+
+#: inc/admin-settings-page.php:173
+msgid "AWT Settings sections"
+msgstr ""
+
+#: inc/admin-settings-page.php:201
+#: inc/admin-settings-page.php:756
+#: inc/admin-settings-page.php:904
+#: inc/admin-settings-page.php:964
+msgid "Save changes"
+msgstr ""
+
+#: inc/admin-settings-page.php:211
+msgid "You have unsaved changes on this tab. Leave without saving? Your changes will be lost."
+msgstr ""
+
+#: inc/admin-settings-page.php:402
+msgid "Select image"
+msgstr ""
+
+#: inc/admin-settings-page.php:404
+msgid "Use this"
+msgstr ""
+
+#: inc/admin-settings-page.php:455
+msgid "Premium"
+msgstr ""
+
+#. translators: %s: tier name, e.g. "Premium".
+#: inc/admin-settings-page.php:458
+#, php-format
+msgid "%s — learn more (opens in a new tab)"
+msgstr ""
+
+#: inc/admin-settings-page.php:478
+#: inc/design-system/carbon.php:50
+msgid "IBM's open-source design system for products and digital experiences."
+msgstr ""
+
+#: inc/admin-settings-page.php:486
+msgid "A design system sets the look of every AWT block: colors, fonts, spacing, and component style."
+msgstr ""
+
+#: inc/admin-settings-page.php:491
+msgid "Active"
+msgstr ""
+
+#: inc/admin-settings-page.php:496
+msgid "AWT is built on Carbon. Every block follows Carbon's components, spacing, and type scale, comes with matching light and dark themes, and meets the WCAG 2.2 AA accessibility standard."
+msgstr ""
+
+#: inc/admin-settings-page.php:500
+msgid "Explore the Carbon Design System (opens in a new tab)"
+msgstr ""
+
+#: inc/admin-settings-page.php:524
+msgid "These defaults apply to every Header brand block on your site. A setting on an individual block overrides them."
+msgstr ""
+
+#: inc/admin-settings-page.php:528
+msgid "Logo for light mode"
+msgstr ""
+
+#: inc/admin-settings-page.php:534
+#: inc/admin-settings-page.php:583
+#: inc/admin-settings-page.php:611
+msgid "Select from Media Library…"
+msgstr ""
+
+#: inc/admin-settings-page.php:541
+msgid "Click \"Select from Media Library\" to upload or choose an image, or paste a URL. SVG, PNG, or WebP work best. This logo shows on light backgrounds, and is also used in dark mode if you don't set a separate dark-mode logo."
+msgstr ""
+
+#: inc/admin-settings-page.php:565
+msgid "(opens in new tab)"
+msgstr ""
+
+#. translators: 1: opening <a> tag for Safe SVG plugin link, 2: closing </a> tag (with opens-in-new-tab sr-text when relevant)
+#: inc/admin-settings-page.php:568
+#, php-format
+msgid "Need to upload an SVG logo? WordPress blocks SVG uploads by default, because SVG files can hide harmful code. To allow them safely, install %1$sSafe SVG%2$s or a similar plugin that cleans SVG files. AWT leaves this to a dedicated plugin so SVG safety stays well-maintained."
+msgstr ""
+
+#: inc/admin-settings-page.php:577
+msgid "Logo for dark mode"
+msgstr ""
+
+#: inc/admin-settings-page.php:591
+msgid "Optional. Upload a light or inverted version of your logo for dark backgrounds. Most logos use dark colors that vanish on dark backgrounds, so add a readable version here. Leave empty to use your light-mode logo everywhere."
+msgstr ""
+
+#: inc/admin-settings-page.php:596
+msgid "Default logo alt text"
+msgstr ""
+
+#: inc/admin-settings-page.php:599
+msgid "Required when you set a logo. Describe what the logo shows — usually your company name. Leave empty if your brand mode is \"Site Title only\"."
+msgstr ""
+
+#: inc/admin-settings-page.php:603
+msgid "Site icon (favicon)"
+msgstr ""
+
+#: inc/admin-settings-page.php:610
+msgid "Select site icon"
+msgstr ""
+
+#: inc/admin-settings-page.php:617
+msgid "Remove"
+msgstr ""
+
+#: inc/admin-settings-page.php:622
+msgid "Shown in browser tabs, bookmarks, and when someone adds your site to a phone home screen. Use a square image at least 512×512 pixels. This is the same Site Icon as Settings → General — kept here so all your branding lives in one place."
+msgstr ""
+
+#: inc/admin-settings-page.php:673
+msgid "Settings that are specific to the Carbon design system: light/dark style, header layout, brand options, type size, and the color-contrast check. Other settings — logos and navigation — have their own tabs."
+msgstr ""
+
+#: inc/admin-settings-page.php:684
+msgid "Appearance"
+msgstr ""
+
+#: inc/admin-settings-page.php:685
+#: inc/welcome-wizard.php:170
+#: inc/welcome-wizard.php:327
+msgid "Header"
+msgstr ""
+
+#: inc/admin-settings-page.php:686
+#: inc/welcome-wizard.php:171
+msgid "Typography"
+msgstr ""
+
+#: inc/admin-settings-page.php:687
+msgid "Colors"
+msgstr ""
+
+#: inc/admin-settings-page.php:695
+#: inc/welcome-wizard.php:281
+msgid "Default (follows the visitor's device setting)"
+msgstr ""
+
+#: inc/admin-settings-page.php:696
+#: inc/welcome-wizard.php:282
+msgid "Always light"
+msgstr ""
+
+#: inc/admin-settings-page.php:697
+#: inc/welcome-wizard.php:283
+msgid "Always dark"
+msgstr ""
+
+#: inc/admin-settings-page.php:700
+msgid "Carbon settings sections"
+msgstr ""
+
+#: inc/admin-settings-page.php:724
+msgid "Applying a different style variation replaces any color, typography, or layout changes you have made in Appearance → Editor → Styles. Continue?"
+msgstr ""
+
+#: inc/admin-settings-page.php:734
+#: inc/style-variations.php:174
+#: inc/welcome-wizard.php:290
+#: inc/welcome-wizard.php:394
+msgid "Style variation"
+msgstr ""
+
+#: inc/admin-settings-page.php:736
+msgid "Each variation pairs a light theme with a dark theme. Applying one replaces any style changes you've made under Appearance → Editor → Styles — the same as choosing a variation there."
+msgstr ""
+
+#: inc/admin-settings-page.php:742
+#: inc/admin-settings-page.php:747
+#: inc/welcome-wizard.php:296
+#: inc/welcome-wizard.php:299
+#: inc/welcome-wizard.php:398
+msgid "Site appearance"
+msgstr ""
+
+#: inc/admin-settings-page.php:744
+msgid "Sets your site's light or dark appearance. \"Default\" follows each visitor's device setting (and the light/dark toggle, if you show one). \"Always light\" and \"Always dark\" lock the appearance for everyone."
+msgstr ""
+
+#: inc/admin-settings-page.php:765
+msgid "Site Title only"
+msgstr ""
+
+#: inc/admin-settings-page.php:766
+msgid "Logo + Site Title"
+msgstr ""
+
+#: inc/admin-settings-page.php:767
+msgid "Logo only"
+msgstr ""
+
+#: inc/admin-settings-page.php:768
+msgid "Site Title + prefix"
+msgstr ""
+
+#: inc/admin-settings-page.php:769
+msgid "Logo + Site Title + prefix"
+msgstr ""
+
+#: inc/admin-settings-page.php:771
+msgid "Applying a different header preset replaces any changes you have made to your header. Continue?"
+msgstr ""
+
+#: inc/admin-settings-page.php:782
+#: inc/admin-settings-page.php:787
+msgid "Header appearance"
+msgstr ""
+
+#: inc/admin-settings-page.php:784
+msgid "Sets the header bar's light or dark appearance. \"Default\" matches the site appearance above. \"Always light\" and \"Always dark\" keep the header fixed no matter what the rest of the page does."
+msgstr ""
+
+#: inc/admin-settings-page.php:796
+#: inc/header-presets.php:89
+#: inc/welcome-wizard.php:332
+#: inc/welcome-wizard.php:402
+msgid "Header preset"
+msgstr ""
+
+#: inc/admin-settings-page.php:798
+msgid "Replaces your current header with one of five ready-made layouts."
+msgstr ""
+
+#: inc/admin-settings-page.php:804
+msgid "Header settings"
+msgstr ""
+
+#: inc/admin-settings-page.php:806
+msgid "Add or remove the icon buttons at the top-right of your header. Each switch changes just that one button and leaves your other header changes alone."
+msgstr ""
+
+#: inc/admin-settings-page.php:819
+#: inc/design-system/carbon.php:397
+msgid "Search"
+msgstr ""
+
+#: inc/admin-settings-page.php:820
+msgid "Replaces search icon with a search field within the header."
+msgstr ""
+
+#: inc/admin-settings-page.php:823
+#: inc/design-system/carbon.php:405
+msgid "Notifications"
+msgstr ""
+
+#: inc/admin-settings-page.php:824
+msgid "Opens notifications panel."
+msgstr ""
+
+#: inc/admin-settings-page.php:827
+#: inc/design-system/carbon.php:413
+msgid "User menu"
+msgstr ""
+
+#: inc/admin-settings-page.php:828
+msgid "Opens user menu."
+msgstr ""
+
+#: inc/admin-settings-page.php:834
+#: inc/admin-settings-page.php:837
+#: inc/welcome-wizard.php:338
+#: inc/welcome-wizard.php:341
+#: inc/welcome-wizard.php:344
+msgid "Header icon buttons"
+msgstr ""
+
+#: inc/admin-settings-page.php:839
+msgid "Plain icon buttons. Search links to your site search; you can point Notifications and User menu wherever you like in the Site Editor."
+msgstr ""
+
+#: inc/admin-settings-page.php:855
+msgid "Header icon widgets"
+msgstr ""
+
+#: inc/admin-settings-page.php:858
+msgid "Header icon widgets (AWT Premium)"
+msgstr ""
+
+#: inc/admin-settings-page.php:860
+msgid "AWT Premium upgrades these icons into rich widgets instead of plain buttons."
+msgstr ""
+
+#: inc/admin-settings-page.php:882
+msgid "Brand"
+msgstr ""
+
+#: inc/admin-settings-page.php:883
+msgid "How the Header brand block looks by default. You can show an optional prefix before the site title (for example a parent brand). Set logo images on the Identity tab."
+msgstr ""
+
+#: inc/admin-settings-page.php:886
+msgid "Default brand mode"
+msgstr ""
+
+#: inc/admin-settings-page.php:896
+msgid "Default prefix"
+msgstr ""
+
+#: inc/admin-settings-page.php:899
+msgid "A short parent-brand name shown before the site title — like \"IBM\" in \"IBM Cloud\". Only appears when brand mode includes a prefix."
+msgstr ""
+
+#: inc/admin-settings-page.php:909
+msgid "Further customization"
+msgstr ""
+
+#: inc/admin-settings-page.php:911
+msgid "AWT Settings covers the common cases. For advanced changes — custom buttons, reordering icons, or restoring the original header — use the WordPress Site Editor."
+msgstr ""
+
+#: inc/admin-settings-page.php:914
+msgid "Adding or reordering icons"
+msgstr ""
+
+#: inc/admin-settings-page.php:915
+msgid "To add custom buttons (an X/Twitter icon, a call-to-action button) or reorder icons, edit the header in the Site Editor."
+msgstr ""
+
+#. translators: %s: link to the Site Editor.
+#: inc/admin-settings-page.php:921
+#: inc/admin-settings-page.php:940
+#, php-format
+msgid "WordPress admin → %s."
+msgstr ""
+
+#: inc/admin-settings-page.php:922
+#: inc/admin-settings-page.php:941
+msgid "Appearance → Editor (Site Editor)"
+msgstr ""
+
+#: inc/admin-settings-page.php:926
+#: inc/admin-settings-page.php:945
+msgid "Patterns → Template Parts → Header."
+msgstr ""
+
+#: inc/admin-settings-page.php:927
+msgid "Click into the header bar. A small toolbar appears with the global actions group at the right end — click into it."
+msgstr ""
+
+#: inc/admin-settings-page.php:928
+msgid "Use the + button to add a new header action, or click an existing one to edit it."
+msgstr ""
+
+#: inc/admin-settings-page.php:931
+msgid "Reverting to the theme's shipped header"
+msgstr ""
+
+#: inc/admin-settings-page.php:933
+msgid "Want to discard your changes and go back to the header AWT ships with the theme? WordPress can do this for you — no plugin needed."
+msgstr ""
+
+#: inc/admin-settings-page.php:946
+msgid "Open the three-dot (⋯) menu on the Header template part (top-right of the canvas, or beside the template part's name in the sidebar)."
+msgstr ""
+
+#: inc/admin-settings-page.php:947
+msgid "Click \"Clear customizations\" (sometimes called \"Reset\"). WordPress discards your saved changes and restores the original header from the theme."
+msgstr ""
+
+#: inc/admin-settings-page.php:950
+msgid "The same works for any other template area (footer, sidebar, and so on) — it's a WordPress feature, not an AWT one. Handy whenever you want a fresh start."
+msgstr ""
+
+#: inc/admin-settings-page.php:976
+msgid "You can change your colors, but every change must keep WCAG-conformant contrast ratios so your site stays readable."
+msgstr ""
+
+#: inc/admin-settings-page.php:979
+msgid "Change colors using"
+msgstr ""
+
+#: inc/admin-settings-page.php:988
+msgid "AWT contrast-safe color editor"
+msgstr ""
+
+#. translators: %s: link to the AWT Premium website
+#: inc/admin-settings-page.php:997
+#, php-format
+msgid "Learn more about %s."
+msgstr ""
+
+#: inc/admin-settings-page.php:998
+msgid "AWT Premium"
+msgstr ""
+
+#: inc/admin-settings-page.php:1026
+msgid "Failed to apply the style variation. Check that the variation file exists in /styles."
+msgstr ""
+
+#: inc/admin-settings-page.php:1046
+msgid "Failed to apply the header preset."
+msgstr ""
+
+#: inc/admin-settings-page.php:1089
+msgid "Compact (0.875×)"
+msgstr ""
+
+#: inc/admin-settings-page.php:1090
+msgid "Slightly smaller than the browser default. Best when fitting more on screen matters more than easy reading."
+msgstr ""
+
+#: inc/admin-settings-page.php:1093
+msgid "Default (1.0×)"
+msgstr ""
+
+#: inc/admin-settings-page.php:1094
+msgid "The standard type scale. Recommended for most sites."
+msgstr ""
+
+#: inc/admin-settings-page.php:1097
+msgid "Comfortable (1.125×)"
+msgstr ""
+
+#: inc/admin-settings-page.php:1098
+msgid "Slightly larger. Recommended for sites with older audiences or low-vision readers."
+msgstr ""
+
+#: inc/admin-settings-page.php:1103
+msgid "Resize every font on your site by the same amount. Heading-to-body proportions and line spacing stay balanced at any size."
+msgstr ""
+
+#: inc/admin-settings-page.php:1106
+msgid "AWT uses IBM Plex Sans for text and IBM Plex Mono for code, chosen for on-screen readability. You can't swap fonts yet, because many web fonts are harder to read."
+msgstr ""
+
+#: inc/admin-settings-page.php:1110
+#: inc/admin-settings-page.php:1113
+msgid "Size scale"
+msgstr ""
+
+#: inc/admin-settings-page.php:1144
+msgid "Preview"
+msgstr ""
+
+#: inc/admin-settings-page.php:1145
+msgid "Updates live as you change the size scale. Save changes to apply across the site."
+msgstr ""
+
+#: inc/admin-settings-page.php:1147
+msgid "Heading 1 — Productive heading 06"
+msgstr ""
+
+#: inc/admin-settings-page.php:1148
+msgid "Heading 2 — Productive heading 04"
+msgstr ""
+
+#: inc/admin-settings-page.php:1149
+msgid "Heading 3 — Productive heading 03"
+msgstr ""
+
+#: inc/admin-settings-page.php:1151
+msgid "Body text. The quick brown fox jumps over the lazy dog. 1234567890. AWT resizes every font by the same amount, so spacing stays balanced at any size. Compact fits more on screen; Comfortable gives larger, easier-to-read type."
+msgstr ""
+
+#. translators: %s: link to Site Editor
+#: inc/admin-settings-page.php:1241
+#, php-format
+msgid "Edit colors in %s. Custom colors you add there appear in this audit alongside Carbon's defaults."
+msgstr ""
+
+#: inc/admin-settings-page.php:1242
+msgid "Site Editor → Styles → Colors"
+msgstr ""
+
+#: inc/admin-settings-page.php:1247
+msgid "This check tests each color only against the backgrounds it's meant to appear on, using the WCAG contrast level its role requires: 4.5:1 for body and link text, 3:1 for interface parts like button edges, icons, focus rings, and borders. Color pairings a color isn't meant for aren't shown."
+msgstr ""
+
+#: inc/admin-settings-page.php:1282
+msgid "No palette colors found."
+msgstr ""
+
+#: inc/admin-settings-page.php:1289
+#: inc/style-variations.php:184
+msgid "Light scope"
+msgstr ""
+
+#: inc/admin-settings-page.php:1290
+#: inc/style-variations.php:185
+msgid "Dark scope"
+msgstr ""
+
+#. translators: 1: passing pairings, 2: failing pairings
+#: inc/admin-settings-page.php:1343
+#, php-format
+msgid "%1$d pass · %2$d fail."
+msgstr ""
+
+#: inc/admin-settings-page.php:1353
+msgid "Token & role"
+msgstr ""
+
+#: inc/admin-settings-page.php:1354
+msgid "Pairing"
+msgstr ""
+
+#: inc/admin-settings-page.php:1355
+msgid "Required contrast"
+msgstr ""
+
+#: inc/admin-settings-page.php:1356
+msgid "Measured contrast"
+msgstr ""
+
+#: inc/admin-settings-page.php:1357
+msgid "Outcome"
+msgstr ""
+
+#: inc/admin-settings-page.php:1358
+msgid "Notes"
+msgstr ""
+
+#: inc/admin-settings-page.php:1374
+msgid "Pass"
+msgstr ""
+
+#: inc/admin-settings-page.php:1374
+msgid "Fail"
+msgstr ""
+
+#: inc/admin-settings-page.php:1416
+msgid "Surfaces (no ratio check)"
+msgstr ""
+
+#: inc/admin-settings-page.php:1418
+msgid "Surface colors are backgrounds — the colors that text and icons sit on top of. They aren't foreground colors, so there's no contrast ratio to check."
+msgstr ""
+
+#: inc/admin-settings-page.php:1436
+msgid "Exempt tokens (intentionally low contrast)"
+msgstr ""
+
+#: inc/admin-settings-page.php:1438
+msgid "These colors are skipped. WCAG exempts disabled controls from contrast rules, and other colors depend too much on context (like focus insets) for an automatic check to judge fairly."
+msgstr ""
+
+#: inc/admin-settings-page.php:1458
+msgid "How to read this audit"
+msgstr ""
+
+#: inc/admin-settings-page.php:1459
+msgid "Each row shows a color, the backgrounds it's designed for, and the contrast level its role needs. Colors are checked only where they're actually used: a text color is tested against the backgrounds it appears on; a button color is tested for its edge contrast, while text-on-button readability is checked separately under \"Text — on accent surfaces\"."
+msgstr ""
+
+#: inc/admin-settings-page.php:1460
+msgid "If a built-in color fails, it's worth investigating. If a color you added yourself fails, reconsider it — or use it only where there's no text."
+msgstr ""
+
+#: inc/admin-settings-page.php:1497
+msgid "Skip link"
+msgstr ""
+
+#: inc/admin-settings-page.php:1500
+msgid "Skip link text"
+msgstr ""
+
+#: inc/admin-settings-page.php:1503
+msgid "Default text for every Skip link on your site. A setting on an individual block wins. Leave empty to use the default, \"Skip to main content\"."
+msgstr ""
+
+#: inc/admin-settings-page.php:1508
+msgid "Breadcrumbs"
+msgstr ""
+
+#: inc/admin-settings-page.php:1511
+msgid "Accessibility benefit"
+msgstr ""
+
+#. translators: 1: opening <a> tag to WCAG 2.4.5; 2: closing </a> tag
+#: inc/admin-settings-page.php:1516
+#, php-format
+msgid "Automatic breadcrumbs help meet the %1$sWCAG \"Multiple Ways\" guideline (2.4.5, Level AA)%2$s, which asks for more than one way to find a page. This matters most if your site has no search: without it, breadcrumbs (or a sitemap) become the main alternative, and the guideline needs at least two ways."
+msgstr ""
+
+#: inc/admin-settings-page.php:1525
+msgid "Auto-emit breadcrumbs"
+msgstr ""
+
+#: inc/admin-settings-page.php:1529
+msgid "Show a breadcrumb trail above the main content on every page except the front page."
+msgstr ""
+
+#: inc/admin-settings-page.php:1531
+msgid "Turn this off if you build breadcrumbs by hand with the Breadcrumb block. If a page has both, the automatic one hides itself."
+msgstr ""
+
+#: inc/admin-settings-page.php:1535
+msgid "Show on mobile"
+msgstr ""
+
+#: inc/admin-settings-page.php:1539
+msgid "Show breadcrumbs on narrow screens (under 672px). This is separate from the main toggle above."
+msgstr ""
+
+#: inc/admin-settings-page.php:1544
+msgid "Home item text"
+msgstr ""
+
+#: inc/admin-settings-page.php:1546
+#: assets/js/breadcrumb-editor.js:62
+msgid "Home"
+msgstr ""
+
+#: inc/admin-settings-page.php:1547
+msgid "The label for the first item in every auto-emitted breadcrumb trail."
+msgstr ""
+
+#: inc/admin-settings-page.php:1551
+msgid "404 item text"
+msgstr ""
+
+#: inc/admin-settings-page.php:1553
+msgid "Page not found"
+msgstr ""
+
+#: inc/admin-settings-page.php:1554
+msgid "The breadcrumb label for the current page when a visitor hits a \"page not found\" (404) error."
+msgstr ""
+
+#: inc/admin-settings-page.php:1586
+msgid "⚠ Read before using these fields"
+msgstr ""
+
+#: inc/admin-settings-page.php:1587
+msgid "These fields accept arbitrary code that AWT cannot validate. Custom code can:"
+msgstr ""
+
+#: inc/admin-settings-page.php:1589
+msgid "Break keyboard navigation by stealing or trapping focus"
+msgstr ""
+
+#: inc/admin-settings-page.php:1590
+msgid "Break screen-reader announcements by overriding ARIA live regions (the regions screen readers watch for updates)"
+msgstr ""
+
+#: inc/admin-settings-page.php:1591
+msgid "Lower color contrast by adding elements in colors outside your palette"
+msgstr ""
+
+#: inc/admin-settings-page.php:1592
+msgid "Break reduced-motion support by adding animations that ignore the visitor's prefers-reduced-motion setting"
+msgstr ""
+
+#: inc/admin-settings-page.php:1593
+msgid "Conflict with your site's Content Security Policy, if it has one"
+msgstr ""
+
+#: inc/admin-settings-page.php:1595
+msgid "AWT's accessibility checker doesn't review code in these fields. You're responsible for the accessibility of anything you paste here."
+msgstr ""
+
+#: inc/admin-settings-page.php:1599
+msgid "Before </head>"
+msgstr ""
+
+#: inc/admin-settings-page.php:1601
+msgid "For analytics snippets, site-verification tags, and font or asset preloads. Loads after most other plugins."
+msgstr ""
+
+#: inc/admin-settings-page.php:1605
+msgid "After <body> opening"
+msgstr ""
+
+#: inc/admin-settings-page.php:1607
+msgid "For third-party widgets that need to load early, such as chat bubbles or A/B-test anti-flicker scripts."
+msgstr ""
+
+#: inc/admin-settings-page.php:1611
+msgid "Before </body>"
+msgstr ""
+
+#: inc/admin-settings-page.php:1613
+msgid "For scripts that can load last, such as footer chat widgets and deferred third-party tools."
+msgstr ""
+
+#: inc/admin-settings-page.php:1704
+msgid "⚠ Read before using this field"
+msgstr ""
+
+#: inc/admin-settings-page.php:1705
+msgid "Custom CSS can:"
+msgstr ""
+
+#: inc/admin-settings-page.php:1707
+msgid "Hide focus outlines"
+msgstr ""
+
+#: inc/admin-settings-page.php:1707
+msgid "removing them is the most common accessibility mistake on the web"
+msgstr ""
+
+#: inc/admin-settings-page.php:1708
+msgid "Lower color contrast below the WCAG AA minimum"
+msgstr ""
+
+#: inc/admin-settings-page.php:1709
+msgid "Hide elements that screen readers depend on"
+msgstr ""
+
+#: inc/admin-settings-page.php:1710
+msgid "Override the prefers-reduced-motion rules built into AWT"
+msgstr ""
+
+#: inc/admin-settings-page.php:1711
+msgid "Clash with AWT's built-in styles in unexpected ways"
+msgstr ""
+
+#: inc/admin-settings-page.php:1713
+msgid "AWT's accessibility checker doesn't review the CSS you add here."
+msgstr ""
+
+#: inc/admin-settings-page.php:1721
+msgid "Insert color customization example"
+msgstr ""
+
+#: inc/admin-settings-page.php:1769
+msgid "Welcome wizard"
+msgstr ""
+
+#: inc/admin-settings-page.php:1771
+msgid "Runs the five-step setup wizard again. Your current settings are kept as the starting point."
+msgstr ""
+
+#: inc/admin-settings-page.php:1775
+msgid "Re-run welcome wizard"
+msgstr ""
+
+#: inc/admin-settings-page.php:1779
+#: inc/admin-settings-page.php:1799
+msgid "Export configuration"
+msgstr ""
+
+#: inc/admin-settings-page.php:1781
+msgid "Download this site's AWT settings as a file — handy for copying to a staging site, sharing a starting point, or attaching to a support request."
+msgstr ""
+
+#: inc/admin-settings-page.php:1803
+#: inc/admin-settings-page.php:1817
+msgid "Import configuration"
+msgstr ""
+
+#: inc/admin-settings-page.php:1805
+msgid "Upload a settings file to replace this site's current AWT settings."
+msgstr ""
+
+#: inc/admin-settings-page.php:1811
+msgid "Importing will replace this site's current AWT settings with the uploaded file. Continue?"
+msgstr ""
+
+#: inc/admin-settings-page.php:1814
+msgid "AWT settings JSON file"
+msgstr ""
+
+#: inc/admin-settings-page.php:1853
+msgid "Could not serialize settings for export."
+msgstr ""
+
+#: inc/admin-settings-page.php:1911
+msgid "No file was uploaded, or the upload failed."
+msgstr ""
+
+#: inc/admin-settings-page.php:1914
+msgid "That file is too large to be an AWT settings file."
+msgstr ""
+
+#: inc/admin-settings-page.php:1919
+msgid "The uploaded file was empty or unreadable."
+msgstr ""
+
+#: inc/admin-settings-page.php:1924
+msgid "The uploaded file is not valid JSON."
+msgstr ""
+
+#: inc/admin-settings-page.php:1930
+msgid "That file doesn't look like an AWT settings file."
+msgstr ""
+
+#: inc/admin-settings-page.php:1943
+msgid "Importing the settings failed. Please check the file and try again."
+msgstr ""
+
+#: inc/breadcrumb-auto-emit.php:116
+msgctxt "breadcrumb"
+msgid "Home"
+msgstr ""
+
+#: inc/breadcrumb-auto-emit.php:127
+msgctxt "breadcrumb"
+msgid "Page not found"
+msgstr ""
+
+#. translators: %s — the visitor's search query.
+#: inc/breadcrumb-auto-emit.php:165
+#, php-format
+msgctxt "breadcrumb"
+msgid "Search: \"%s\""
+msgstr ""
+
+#: inc/breadcrumb-auto-emit.php:274
+msgctxt "breadcrumb month format"
+msgid "F"
+msgstr ""
+
+#: inc/breadcrumb-auto-emit.php:283
+msgctxt "breadcrumb day format"
+msgid "j"
+msgstr ""
+
+#: inc/breadcrumb-auto-emit.php:369
+#: inc/breadcrumb-auto-emit.php:414
+#: assets/js/breadcrumb-editor.js:210
+msgid "Breadcrumb"
+msgstr ""
+
+#: inc/design-system/carbon.php:46
+msgid "Carbon"
+msgstr ""
+
+#: inc/design-system/carbon.php:114
+msgid "White + g100"
+msgstr ""
+
+#: inc/design-system/carbon.php:115
+msgid "Pure white light theme paired with deepest dark. Maximum contrast."
+msgstr ""
+
+#: inc/design-system/carbon.php:120
+msgid "White + g90"
+msgstr ""
+
+#: inc/design-system/carbon.php:121
+msgid "Pure white light paired with a slightly softer dark. Easier on the eyes for long reading."
+msgstr ""
+
+#: inc/design-system/carbon.php:126
+msgid "g10 + g100"
+msgstr ""
+
+#: inc/design-system/carbon.php:127
+msgid "Soft gray light theme paired with deepest dark. Reduces eye strain on bright displays."
+msgstr ""
+
+#: inc/design-system/carbon.php:132
+msgid "g10 + g90"
+msgstr ""
+
+#: inc/design-system/carbon.php:133
+msgid "Soft gray light + softer dark. The most neutral, least-fatiguing combination."
+msgstr ""
+
+#: inc/design-system/carbon.php:154
+msgid "Marketing"
+msgstr ""
+
+#: inc/design-system/carbon.php:155
+msgid "Brand + horizontal primary nav + minimal global actions. No side nav. Landing pages, public product sites."
+msgstr ""
+
+#: inc/design-system/carbon.php:158
+msgid "Documentation"
+msgstr ""
+
+#: inc/design-system/carbon.php:159
+msgid "Brand + horizontal section nav + search + persistent side nav. Knowledge bases, reference sites."
+msgstr ""
+
+#: inc/design-system/carbon.php:162
+msgid "Application"
+msgstr ""
+
+#: inc/design-system/carbon.php:163
+msgid "Brand + global actions (search, notifications, user menu) + optional side nav. SaaS dashboards, admin tools."
+msgstr ""
+
+#: inc/design-system/carbon.php:166
+msgid "Public sector"
+msgstr ""
+
+#: inc/design-system/carbon.php:167
+msgid "Prominent agency identifier + nav + language switcher. Government sites, public-service portals, EAA-regulated orgs."
+msgstr ""
+
+#: inc/design-system/carbon.php:418
+msgid "Color-scheme toggle"
+msgstr ""
+
+#: inc/design-system/carbon.php:580
+msgid "Text — primary body"
+msgstr ""
+
+#: inc/design-system/carbon.php:585
+#: inc/design-system/carbon.php:605
+#: inc/design-system/carbon.php:620
+#: inc/design-system/carbon.php:652
+#: inc/design-system/carbon.php:712
+#: inc/design-system/carbon.php:727
+#: inc/design-system/carbon.php:742
+#: inc/design-system/carbon.php:868
+#: inc/design-system/carbon.php:883
+#: inc/design-system/carbon.php:893
+#: inc/design-system/carbon.php:909
+msgid "on background"
+msgstr ""
+
+#: inc/design-system/carbon.php:590
+#: inc/design-system/carbon.php:610
+#: inc/design-system/carbon.php:625
+#: inc/design-system/carbon.php:657
+#: inc/design-system/carbon.php:717
+#: inc/design-system/carbon.php:732
+#: inc/design-system/carbon.php:747
+#: inc/design-system/carbon.php:914
+msgid "on layer-01"
+msgstr ""
+
+#: inc/design-system/carbon.php:595
+#: inc/design-system/carbon.php:635
+msgid "in field input"
+msgstr ""
+
+#: inc/design-system/carbon.php:600
+msgid "Text — secondary"
+msgstr ""
+
+#: inc/design-system/carbon.php:615
+msgid "Text — helper / caption"
+msgstr ""
+
+#: inc/design-system/carbon.php:630
+msgid "Text — placeholder"
+msgstr ""
+
+#: inc/design-system/carbon.php:636
+msgid "Carbon Design System default — we suggest updating text-placeholder to a higher-contrast value (e.g., #767676 reaches 4.54:1 against field-01)."
+msgstr ""
+
+#: inc/design-system/carbon.php:641
+msgid "in field input (alt)"
+msgstr ""
+
+#: inc/design-system/carbon.php:642
+msgid "Carbon Design System default — same value as the field-01 pairing above; we suggest updating to meet the 4.5:1 body-text threshold."
+msgstr ""
+
+#: inc/design-system/carbon.php:647
+msgid "Text — error message"
+msgstr ""
+
+#: inc/design-system/carbon.php:662
+msgid "Text — on accent surfaces"
+msgstr ""
+
+#: inc/design-system/carbon.php:667
+msgid "on Button primary"
+msgstr ""
+
+#: inc/design-system/carbon.php:672
+msgid "on Button secondary"
+msgstr ""
+
+#: inc/design-system/carbon.php:677
+msgid "on Button danger"
+msgstr ""
+
+#: inc/design-system/carbon.php:682
+msgid "on Support error"
+msgstr ""
+
+#: inc/design-system/carbon.php:683
+msgid "Carbon Design System default — in dark scope (g90/g100), Support error brightens (#fa4d56) and white text drops to ~3.35:1, below the 4.5:1 body threshold. We suggest reserving banner body text for ≥18pt sizes, or pairing the banner with an icon shape that carries the meaning."
+msgstr ""
+
+#: inc/design-system/carbon.php:688
+msgid "on Support info"
+msgstr ""
+
+#: inc/design-system/carbon.php:689
+msgid "Carbon Design System default — same tradeoff as Support error in dark scope. White text on dark-mode #4589ff falls below the 4.5:1 body threshold."
+msgstr ""
+
+#: inc/design-system/carbon.php:694
+msgid "Text — inverse (light on dark)"
+msgstr ""
+
+#: inc/design-system/carbon.php:699
+msgid "on inverse surface"
+msgstr ""
+
+#: inc/design-system/carbon.php:702
+msgid "Used on inverted UI like tooltips. Inverse surfaces are usually the opposite-scope background token."
+msgstr ""
+
+#: inc/design-system/carbon.php:707
+msgid "Link — primary"
+msgstr ""
+
+#: inc/design-system/carbon.php:722
+msgid "Link — hover"
+msgstr ""
+
+#: inc/design-system/carbon.php:737
+msgid "Link — visited"
+msgstr ""
+
+#: inc/design-system/carbon.php:754
+msgid "Button — primary surface"
+msgstr ""
+
+#: inc/design-system/carbon.php:759
+#: inc/design-system/carbon.php:770
+#: inc/design-system/carbon.php:791
+msgid "button edge on background"
+msgstr ""
+
+#: inc/design-system/carbon.php:762
+msgid "Button-primary IS a surface; the text on top is checked via \"Text — on accent surfaces\" above."
+msgstr ""
+
+#: inc/design-system/carbon.php:765
+msgid "Button — secondary surface"
+msgstr ""
+
+#: inc/design-system/carbon.php:775
+msgid "Button — tertiary (outline)"
+msgstr ""
+
+#: inc/design-system/carbon.php:780
+msgid "outline/text on background"
+msgstr ""
+
+#: inc/design-system/carbon.php:783
+msgid "Tertiary buttons are outline-only — the same token serves as border AND text. Needs full text contrast."
+msgstr ""
+
+#: inc/design-system/carbon.php:786
+msgid "Button — danger surface"
+msgstr ""
+
+#: inc/design-system/carbon.php:798
+msgid "Status — error icon / accent"
+msgstr ""
+
+#: inc/design-system/carbon.php:803
+#: inc/design-system/carbon.php:818
+#: inc/design-system/carbon.php:833
+#: inc/design-system/carbon.php:851
+msgid "icon on background"
+msgstr ""
+
+#: inc/design-system/carbon.php:808
+#: inc/design-system/carbon.php:823
+#: inc/design-system/carbon.php:839
+#: inc/design-system/carbon.php:856
+msgid "icon on layer-01"
+msgstr ""
+
+#: inc/design-system/carbon.php:813
+msgid "Status — success icon / accent"
+msgstr ""
+
+#: inc/design-system/carbon.php:828
+msgid "Status — warning icon / accent"
+msgstr ""
+
+#: inc/design-system/carbon.php:834
+msgid "Carbon Design System default — warning yellow #f1c21b fails the 3:1 UI threshold on light surfaces. We suggest always pairing it with an icon SHAPE so meaning isn't conveyed by color alone, or substituting a higher-contrast amber if you use it for non-text UI."
+msgstr ""
+
+#: inc/design-system/carbon.php:840
+msgid "Same — Carbon's default warning yellow fails on every light surface; pair with icon shape or substitute."
+msgstr ""
+
+#: inc/design-system/carbon.php:843
+msgid "Warning yellow is famously low-contrast — Carbon's guidance is to always pair it with an icon shape, never use it for text."
+msgstr ""
+
+#: inc/design-system/carbon.php:846
+msgid "Status — info icon / accent"
+msgstr ""
+
+#: inc/design-system/carbon.php:863
+msgid "Border — strong (field borders, dividers)"
+msgstr ""
+
+#: inc/design-system/carbon.php:873
+msgid "around field input"
+msgstr ""
+
+#: inc/design-system/carbon.php:878
+msgid "Border — interactive (focused field)"
+msgstr ""
+
+#: inc/design-system/carbon.php:888
+msgid "Focus ring"
+msgstr ""
+
+#: inc/design-system/carbon.php:898
+msgid "on primary button"
+msgstr ""
+
+#: inc/design-system/carbon.php:899
+msgid "Carbon Design System default — focus and button-primary share the same blue (#0f62fe). Carbon's CSS mitigates with an inner-shadow + focus-inset (white) double-ring technique on Button. If you change either token, port that technique so the focus ring stays visible on the primary button."
+msgstr ""
+
+#: inc/design-system/carbon.php:904
+msgid "Interactive — accent for active states"
+msgstr ""
+
+#: inc/design-system/carbon.php:1013
+msgid "Vertically stacked, expandable sections."
+msgstr ""
+
+#: inc/design-system/carbon.php:1014
+msgid "Navigation trail showing page hierarchy."
+msgstr ""
+
+#: inc/design-system/carbon.php:1015
+msgid "Primary, secondary, tertiary, ghost, and danger actions."
+msgstr ""
+
+#: inc/design-system/carbon.php:1016
+msgid "Multi-select form control."
+msgstr ""
+
+#: inc/design-system/carbon.php:1017
+msgid "Inline, single-line, and multi-line code blocks with copy."
+msgstr ""
+
+#: inc/design-system/carbon.php:1018
+msgid "Toggle between related views."
+msgstr ""
+
+#: inc/design-system/carbon.php:1019
+msgid "Sortable tabular data."
+msgstr ""
+
+#: inc/design-system/carbon.php:1020
+msgid "Single-select listbox."
+msgstr ""
+
+#: inc/design-system/carbon.php:1021
+msgid "UI-shell footer sections and links."
+msgstr ""
+
+#: inc/design-system/carbon.php:1022
+msgid "Accessible form wrapper with title and description."
+msgstr ""
+
+#: inc/design-system/carbon.php:1023
+msgid "UI-shell header icon action."
+msgstr ""
+
+#: inc/design-system/carbon.php:1024
+msgid "UI-shell brand / logo link."
+msgstr ""
+
+#: inc/design-system/carbon.php:1025
+msgid "UI-shell global action cluster."
+msgstr ""
+
+#: inc/design-system/carbon.php:1026
+msgid "UI-shell primary navigation."
+msgstr ""
+
+#: inc/design-system/carbon.php:1027
+msgid "UI-shell expanding search."
+msgstr ""
+
+#: inc/design-system/carbon.php:1028
+msgid "Standalone and inline hyperlinks."
+msgstr ""
+
+#: inc/design-system/carbon.php:1029
+msgid "Ordered and unordered lists."
+msgstr ""
+
+#: inc/design-system/carbon.php:1030
+msgid "Button that opens an action menu."
+msgstr ""
+
+#: inc/design-system/carbon.php:1031
+msgid "Dialog overlay."
+msgstr ""
+
+#: inc/design-system/carbon.php:1032
+msgid "Inline and toast status messages."
+msgstr ""
+
+#: inc/design-system/carbon.php:1033
+msgid "Page navigation."
+msgstr ""
+
+#: inc/design-system/carbon.php:1034
+msgid "Password field with visibility toggle."
+msgstr ""
+
+#: inc/design-system/carbon.php:1035
+msgid "Single-select radio group."
+msgstr ""
+
+#: inc/design-system/carbon.php:1036
+msgid "Native select control."
+msgstr ""
+
+#: inc/design-system/carbon.php:1037
+msgid "UI-shell side navigation."
+msgstr ""
+
+#: inc/design-system/carbon.php:1038
+msgid "Skip-to-content bypass link."
+msgstr ""
+
+#: inc/design-system/carbon.php:1039
+msgid "Tabbed content panels."
+msgstr ""
+
+#: inc/design-system/carbon.php:1040
+msgid "Categorical labels."
+msgstr ""
+
+#: inc/design-system/carbon.php:1041
+msgid "Multi-line text field."
+msgstr ""
+
+#: inc/design-system/carbon.php:1042
+msgid "Single-line text field."
+msgstr ""
+
+#: inc/design-system/carbon.php:1043
+msgid "Content container; clickable / selectable / expandable."
+msgstr ""
+
+#: inc/design-system/carbon.php:1044
+msgid "On/off switch."
+msgstr ""
+
+#: inc/design-system/carbon.php:1045
+msgid "Click-triggered contextual popover."
+msgstr ""
+
+#: inc/design-system/carbon.php:1046
+msgid "Hover/focus contextual hint."
+msgstr ""
+
+#: inc/style-variations.php:121
+msgid "Custom Styles"
+msgstr ""
+
+#: inc/welcome-wizard.php:114
+#: inc/welcome-wizard.php:252
+msgid "Welcome to AWT"
+msgstr ""
+
+#: inc/welcome-wizard.php:115
+msgid "Finish setting up your site in a few quick steps."
+msgstr ""
+
+#: inc/welcome-wizard.php:117
+msgid "Start setup"
+msgstr ""
+
+#: inc/welcome-wizard.php:145
+#: inc/welcome-wizard.php:167
+msgid "Welcome"
+msgstr ""
+
+#: inc/welcome-wizard.php:164
+msgid "Wizard progress"
+msgstr ""
+
+#: inc/welcome-wizard.php:168
+#: inc/welcome-wizard.php:286
+msgid "Style & appearance"
+msgstr ""
+
+#: inc/welcome-wizard.php:172
+msgid "Done"
+msgstr ""
+
+#: inc/welcome-wizard.php:232
+#: inc/welcome-wizard.php:415
+msgid "← Back"
+msgstr ""
+
+#: inc/welcome-wizard.php:235
+msgid "Skip this step"
+msgstr ""
+
+#: inc/welcome-wizard.php:237
+msgid "Next →"
+msgstr ""
+
+#: inc/welcome-wizard.php:253
+msgid "This wizard helps you set up how your site looks. You can skip any step and change everything later in AWT Settings."
+msgstr ""
+
+#: inc/welcome-wizard.php:254
+msgid "AWT is built on IBM's Carbon Design System. Every block meets the WCAG 2.2 AA accessibility standard and comes with matching light and dark themes, full keyboard support, and screen-reader support."
+msgstr ""
+
+#: inc/welcome-wizard.php:257
+msgid "Want more? AWT Premium adds:"
+msgstr ""
+
+#: inc/welcome-wizard.php:259
+msgid "More section layouts and page patterns"
+msgstr ""
+
+#: inc/welcome-wizard.php:260
+msgid "A contrast-safe color editor that matches your brand without breaking readability"
+msgstr ""
+
+#: inc/welcome-wizard.php:261
+msgid "Styled WooCommerce shop, product, cart, and checkout pages"
+msgstr ""
+
+#: inc/welcome-wizard.php:262
+msgid "Professionally translated European languages, and email support"
+msgstr ""
+
+#: inc/welcome-wizard.php:266
+msgid "Learn more about AWT Premium →"
+msgstr ""
+
+#: inc/welcome-wizard.php:291
+msgid "Each variation pairs a light theme with a dark theme."
+msgstr ""
+
+#: inc/welcome-wizard.php:297
+msgid "Sets your site's light or dark appearance. \"Default\" follows each visitor's device setting (and the light/dark toggle, if you show one)."
+msgstr ""
+
+#: inc/welcome-wizard.php:307
+msgid "Applying a style variation replaces any style changes you have made under Appearance → Editor → Styles."
+msgstr ""
+
+#: inc/welcome-wizard.php:315
+msgid "Add your logo"
+msgstr ""
+
+#: inc/welcome-wizard.php:333
+msgid "Pick a ready-made header layout. You can rearrange the individual blocks later."
+msgstr ""
+
+#: inc/welcome-wizard.php:359
+msgid "Changing the header preset replaces your current header layout."
+msgstr ""
+
+#: inc/welcome-wizard.php:367
+msgid "Text size"
+msgstr ""
+
+#: inc/welcome-wizard.php:386
+msgid "Setup complete — your choices are saved."
+msgstr ""
+
+#: inc/welcome-wizard.php:389
+msgid "You're all set"
+msgstr ""
+
+#: inc/welcome-wizard.php:390
+msgid "Here's a recap. You can change any of this later in AWT Settings."
+msgstr ""
+
+#: inc/welcome-wizard.php:395
+msgid "Theme default"
+msgstr ""
+
+#: inc/welcome-wizard.php:403
+msgid "Default (Marketing)"
+msgstr ""
+
+#: inc/welcome-wizard.php:406
+msgid "Logo"
+msgstr ""
+
+#: inc/welcome-wizard.php:407
+msgid "Configured"
+msgstr ""
+
+#: inc/welcome-wizard.php:407
+msgid "Site title only"
+msgstr ""
+
+#: inc/welcome-wizard.php:416
+msgid "Finish setup"
+msgstr ""
+
+#: inc/whats-new.php:127
+msgid "What's new"
+msgstr ""
+
+#: inc/whats-new.php:165
+msgid "important release notes need your attention"
+msgstr ""
+
+#: inc/whats-new.php:168
+msgid "unread release notes"
+msgstr ""
+
+#: inc/whats-new.php:230
+msgid "No release notes are available yet."
+msgstr ""
+
+#: inc/whats-new.php:241
+msgid "What's new in AWT"
+msgstr ""
+
+#: inc/whats-new.php:244
+msgid "Important release notes"
+msgstr ""
+
+#: inc/whats-new.php:245
+msgid "Needs your attention"
+msgstr ""
+
+#: inc/whats-new.php:246
+msgid "These releases contain security fixes or changes that may need action on your site."
+msgstr ""
+
+#: inc/whats-new.php:257
+msgid "Got it — dismiss these notes"
+msgstr ""
+
+#: inc/whats-new.php:271
+msgid "(new)"
+msgstr ""
+
+#: inc/whats-new.php:277
+msgid "Release notes come from the AWT Blocks plugin bundled with each update. Nothing is fetched from the internet."
+msgstr ""
+
+#: patterns/carbon-card.php
+msgctxt "Pattern title"
+msgid "AWT — Card (Carbon pattern)"
+msgstr ""
+
+#: patterns/carbon-card.php
+msgctxt "Pattern description"
+msgid "Carbon's content-tile pattern. Heading + body + optional footer action. Built from awt/tile."
+msgstr ""
+
+#: patterns/carbon-dialog.php
+msgctxt "Pattern title"
+msgid "AWT — Dialog (Carbon pattern)"
+msgstr ""
+
+#: patterns/carbon-dialog.php
+msgctxt "Pattern description"
+msgid "Modal dialog with header + body + footer action row. Triggered by a button."
+msgstr ""
+
+#: patterns/carbon-disclosure.php
+msgctxt "Pattern title"
+msgid "AWT — Disclosure (Carbon pattern)"
+msgstr ""
+
+#: patterns/carbon-disclosure.php
+msgctxt "Pattern description"
+msgid "Collapsible sections built on Carbon's accordion. Use for FAQ-style content where space is scarce."
+msgstr ""
+
+#: patterns/carbon-empty-states.php
+msgctxt "Pattern title"
+msgid "AWT — Empty state (Carbon pattern)"
+msgstr ""
+
+#: patterns/carbon-empty-states.php
+msgctxt "Pattern description"
+msgid "Centered \"no results\" / \"no data\" composition. Heading + supporting paragraph + optional action."
+msgstr ""
+
+#: patterns/carbon-error-messages.php
+msgctxt "Pattern title"
+msgid "AWT — Error messages (Carbon pattern)"
+msgstr ""
+
+#: patterns/carbon-error-messages.php
+msgctxt "Pattern description"
+msgid "Inline + page-level error compositions. Uses awt/notification at error severity with descriptive copy."
+msgstr ""
+
+#: patterns/carbon-forms.php
+msgctxt "Pattern title"
+msgid "AWT — Form (Carbon pattern)"
+msgstr ""
+
+#: patterns/carbon-forms.php
+msgctxt "Pattern description"
+msgid "Carbon form-layout pattern. Stacked labelled inputs + checkbox + submit. Foundation for any form scenario."
+msgstr ""
+
+#: patterns/carbon-login.php
+msgctxt "Pattern title"
+msgid "AWT — Login (Carbon pattern)"
+msgstr ""
+
+#: patterns/carbon-login.php
+msgctxt "Pattern description"
+msgid "Centered login form with username + password + submit + recovery link."
+msgstr ""
+
+#: patterns/contact-form.php
+msgctxt "Pattern title"
+msgid "AWT — Contact form"
+msgstr ""
+
+#: patterns/contact-form.php
+msgctxt "Pattern description"
+msgid "Single-column contact form with name + email + message + submit. Replace the form's action endpoint with your handler."
+msgstr ""
+
+#: patterns/cta-section.php
+msgctxt "Pattern title"
+msgid "AWT — CTA section"
+msgstr ""
+
+#: patterns/cta-section.php
+msgctxt "Pattern description"
+msgid "Centered headline + supporting text + primary action. Section break between content and conversion."
+msgstr ""
+
+#: patterns/faq-accordion.php
+msgctxt "Pattern title"
+msgid "AWT — FAQ accordion"
+msgstr ""
+
+#: patterns/faq-accordion.php
+msgctxt "Pattern description"
+msgid "Heading + collapsible question-and-answer accordion. Emits FAQPage JSON-LD via awt/faq-item for Google rich-result SEO."
+msgstr ""
+
+#: patterns/feature-grid.php
+msgctxt "Pattern title"
+msgid "AWT — Feature grid (3-up)"
+msgstr ""
+
+#: patterns/feature-grid.php
+msgctxt "Pattern description"
+msgid "Three-column feature grid with icon + heading + description per cell."
+msgstr ""
+
+#: patterns/header-preset-application.php
+msgctxt "Pattern title"
+msgid "AWT — Header preset: Application"
+msgstr ""
+
+#: patterns/header-preset-application.php
+msgctxt "Pattern description"
+msgid "Brand + global actions cluster (search, notifications, user menu) with optional side-nav toggle. For SaaS dashboards and admin tools."
+msgstr ""
+
+#: patterns/header-preset-documentation.php
+msgctxt "Pattern title"
+msgid "AWT — Header preset: Documentation"
+msgstr ""
+
+#: patterns/header-preset-documentation.php
+msgctxt "Pattern description"
+msgid "Brand + horizontal section nav + search + persistent side nav. Designed for technical product docs, knowledge bases, and reference sites."
+msgstr ""
+
+#: patterns/header-preset-marketing.php
+msgctxt "Pattern title"
+msgid "AWT — Header preset: Marketing"
+msgstr ""
+
+#: patterns/header-preset-marketing.php
+msgctxt "Pattern description"
+msgid "Brand + horizontal primary nav + minimal global actions. No side nav. Optimized for landing pages and conversion-focused sites."
+msgstr ""
+
+#: patterns/header-preset-public-sector.php
+msgctxt "Pattern title"
+msgid "AWT — Header preset: Public sector"
+msgstr ""
+
+#: patterns/header-preset-public-sector.php
+msgctxt "Pattern description"
+msgid "Prominent agency identifier + accessible nav + language switcher + minimal actions. For government sites, public-service portals, EAA-regulated orgs."
+msgstr ""
+
+#: patterns/hero.php
+msgctxt "Pattern title"
+msgid "AWT — Hero"
+msgstr ""
+
+#: patterns/hero.php
+msgctxt "Pattern description"
+msgid "Centered hero with eyebrow, headline, supporting text, and a primary CTA."
+msgstr ""
+
+#: patterns/layout-four-columns-equal.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: four columns (equal)"
+msgstr ""
+
+#: patterns/layout-four-columns-equal.php
+msgctxt "Pattern description"
+msgid "Four equal columns. Stats bar / logo cloud / dense feature grid base."
+msgstr ""
+
+#: patterns/layout-one-column-contained.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: one column (contained)"
+msgstr ""
+
+#: patterns/layout-one-column-contained.php
+msgctxt "Pattern description"
+msgid "Single column constrained to default content width. The standard reading container."
+msgstr ""
+
+#: patterns/layout-one-column-full.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: one column (full width)"
+msgstr ""
+
+#: patterns/layout-one-column-full.php
+msgctxt "Pattern description"
+msgid "Single column at full content area width (no max-width cap). For hero-style or image-led sections."
+msgstr ""
+
+#: patterns/layout-one-column-narrow.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: one column (narrow)"
+msgstr ""
+
+#: patterns/layout-one-column-narrow.php
+msgctxt "Pattern description"
+msgid "Single column at narrow (42rem) reading-line-length width. Optimized for long-form prose."
+msgstr ""
+
+#: patterns/layout-stacked-sections.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: stacked sections"
+msgstr ""
+
+#: patterns/layout-stacked-sections.php
+msgctxt "Pattern description"
+msgid "Three vertically-stacked sections with Carbon vertical rhythm. Foundation for marketing pages composed from multiple section patterns."
+msgstr ""
+
+#: patterns/layout-three-columns-25-50-25.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: three columns (25/50/25)"
+msgstr ""
+
+#: patterns/layout-three-columns-25-50-25.php
+msgctxt "Pattern description"
+msgid "Three columns with center-weighted middle. Sidebar + main + sidebar."
+msgstr ""
+
+#: patterns/layout-three-columns-equal.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: three columns (equal)"
+msgstr ""
+
+#: patterns/layout-three-columns-equal.php
+msgctxt "Pattern description"
+msgid "Three equal columns. Standard feature-grid base."
+msgstr ""
+
+#: patterns/layout-two-columns-25-75.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: two columns (25/75)"
+msgstr ""
+
+#: patterns/layout-two-columns-25-75.php
+msgctxt "Pattern description"
+msgid "Two columns at 1/4 + 3/4 width. Narrow nav-like aside + main content."
+msgstr ""
+
+#: patterns/layout-two-columns-33-66.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: two columns (33/66)"
+msgstr ""
+
+#: patterns/layout-two-columns-33-66.php
+msgctxt "Pattern description"
+msgid "Two columns at 1/3 + 2/3 width. Sidebar + main content."
+msgstr ""
+
+#: patterns/layout-two-columns-66-33.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: two columns (66/33)"
+msgstr ""
+
+#: patterns/layout-two-columns-66-33.php
+msgctxt "Pattern description"
+msgid "Two columns at 2/3 + 1/3 width. Main content + sidebar."
+msgstr ""
+
+#: patterns/layout-two-columns-75-25.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: two columns (75/25)"
+msgstr ""
+
+#: patterns/layout-two-columns-75-25.php
+msgctxt "Pattern description"
+msgid "Two columns at 3/4 + 1/4 width. Main content + narrow aside."
+msgstr ""
+
+#: patterns/layout-two-columns-equal.php
+msgctxt "Pattern title"
+msgid "AWT — Layout: two columns (50/50)"
+msgstr ""
+
+#: patterns/layout-two-columns-equal.php
+msgctxt "Pattern description"
+msgid "Two equal columns. The most common multi-column layout."
+msgstr ""
+
+#: patterns/logo-cloud.php
+msgctxt "Pattern title"
+msgid "AWT — Logo cloud"
+msgstr ""
+
+#: patterns/logo-cloud.php
+msgctxt "Pattern description"
+msgid "Row of customer or partner logos with an optional heading. Used to build social proof on marketing pages."
+msgstr ""
+
+#: patterns/newsletter-signup.php
+msgctxt "Pattern title"
+msgid "AWT — Newsletter signup"
+msgstr ""
+
+#: patterns/newsletter-signup.php
+msgctxt "Pattern description"
+msgid "Heading + supporting text + email input + submit. Subscribe section for marketing pages."
+msgstr ""
+
+#: patterns/page-about.php
+msgctxt "Pattern title"
+msgid "AWT — Page: About"
+msgstr ""
+
+#: patterns/page-about.php
+msgctxt "Pattern description"
+msgid "Starter About page. Heading + intro paragraph + Team grid section."
+msgstr ""
+
+#: patterns/page-contact.php
+msgctxt "Pattern title"
+msgid "AWT — Page: Contact"
+msgstr ""
+
+#: patterns/page-contact.php
+msgctxt "Pattern description"
+msgid "Starter Contact page. Heading + intro + contact form."
+msgstr ""
+
+#: patterns/page-docs-article.php
+msgctxt "Pattern title"
+msgid "AWT — Page: Documentation article"
+msgstr ""
+
+#: patterns/page-docs-article.php
+msgctxt "Pattern description"
+msgid "Starter docs article. Breadcrumb + heading + intro + body content scaffold."
+msgstr ""
+
+#: patterns/page-docs-index.php
+msgctxt "Pattern title"
+msgid "AWT — Page: Documentation index"
+msgstr ""
+
+#: patterns/page-docs-index.php
+msgctxt "Pattern description"
+msgid "Starter docs landing page. Heading + intro + 3-column card grid linking to top-level docs sections."
+msgstr ""
+
+#: patterns/page-faq.php
+msgctxt "Pattern title"
+msgid "AWT — Page: FAQ"
+msgstr ""
+
+#: patterns/page-faq.php
+msgctxt "Pattern description"
+msgid "Starter FAQ page. Heading + intro + FAQ accordion + CTA. Emits FAQPage JSON-LD via awt/faq-item."
+msgstr ""
+
+#: patterns/page-home.php
+msgctxt "Pattern title"
+msgid "AWT — Page: Home (Hero + Feature grid + FAQ)"
+msgstr ""
+
+#: patterns/page-home.php
+msgctxt "Pattern description"
+msgid "Full home-page starter: hero with CTAs, three-column feature grid, and FAQ accordion. Pair it with the \"Page without title\" template so the hero is the page's main heading."
+msgstr ""
+
+#: patterns/page-legal.php
+msgctxt "Pattern title"
+msgid "AWT — Page: Legal page shell"
+msgstr ""
+
+#: patterns/page-legal.php
+msgctxt "Pattern description"
+msgid "Scaffold for ToS / Privacy / Accessibility statement / similar pages. Heading + last-updated date + sectioned long-form prose."
+msgstr ""
+
+#: patterns/page-pricing.php
+msgctxt "Pattern title"
+msgid "AWT — Page: Pricing"
+msgstr ""
+
+#: patterns/page-pricing.php
+msgctxt "Pattern description"
+msgid "Starter Pricing page. Heading + intro + pricing table + FAQ accordion + CTA."
+msgstr ""
+
+#: patterns/pricing-table.php
+msgctxt "Pattern title"
+msgid "AWT — Pricing table"
+msgstr ""
+
+#: patterns/pricing-table.php
+msgctxt "Pattern description"
+msgid "3-tier pricing tile row + feature-comparison matrix below. Modelled on IBM's Edition options and features pattern."
+msgstr ""
+
+#: patterns/stats-bar.php
+msgctxt "Pattern title"
+msgid "AWT — Stats bar"
+msgstr ""
+
+#: patterns/stats-bar.php
+msgctxt "Pattern description"
+msgid "4-column statistic row with large numbers + descriptive labels. Modelled on Carbon's c4d-cta-block-item statistic styling."
+msgstr ""
+
+#: patterns/team-grid.php
+msgctxt "Pattern title"
+msgid "AWT — Team grid"
+msgstr ""
+
+#: patterns/team-grid.php
+msgctxt "Pattern description"
+msgid "3-column team-member grid with photo + name + role. Replace placeholder images with real photos."
+msgstr ""
+
+#: patterns/testimonial.php
+msgctxt "Pattern title"
+msgid "AWT — Testimonial"
+msgstr ""
+
+#: patterns/testimonial.php
+msgctxt "Pattern description"
+msgid "Customer quote with author attribution. Serif body type for editorial weight."
+msgstr ""
+
+#: assets/js/breadcrumb-editor.js:90
+msgid "(no title yet)"
+msgstr ""
+
+#: assets/js/breadcrumb-editor.js:123
+msgid "Breadcrumb preview"
+msgstr ""
+
+#: assets/js/breadcrumb-editor.js:142
+msgid "Hide breadcrumb on this page"
+msgstr ""
+
+#: assets/js/breadcrumb-editor.js:163
+msgid "Breadcrumbs are turned off site-wide (AWT Settings → Navigation), so none will appear here."
+msgstr ""
+
+#: assets/js/breadcrumb-editor.js:168
+msgid "Hidden on this page. With the toggle off it would render:"
+msgstr ""
+
+#: assets/js/breadcrumb-editor.js:173
+msgid "Preview of the breadcrumb that appears at the top of this page:"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Background"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Layer 01"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Layer 02"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Layer 03"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Field 01"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Field 02"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Field 03"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Text primary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Text secondary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Text placeholder"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Text helper"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Text error"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Text inverse"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Text on color"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Text disabled"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Link primary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Link secondary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Link visited"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Link inverse"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Border subtle"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Border strong"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Border inverse"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Border interactive"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Focus"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Focus inset"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Focus inverse"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Interactive"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Support error"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Support success"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Support warning"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Support info"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Button primary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Button secondary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Button tertiary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Button danger primary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Button danger secondary"
+msgstr ""
+
+#: theme.json
+msgctxt "Color name"
+msgid "Button disabled"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "IBM Plex Sans"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "IBM Plex Mono"
+msgstr ""
+
+#: theme.json
+msgctxt "Font family name"
+msgid "IBM Plex Serif"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Label 01"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Helper 01"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Body 01"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Body 02"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 01"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 02"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 03"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 04"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 05"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 06"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Heading 07"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Display 01"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Display 02"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Display 03"
+msgstr ""
+
+#: theme.json
+msgctxt "Font size name"
+msgid "Display 04"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 01"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 02"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 03"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 04"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 05"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 06"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 07"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 08"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 09"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 10"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 11"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 12"
+msgstr ""
+
+#: theme.json
+msgctxt "Space size name"
+msgid "Spacing 13"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Header"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Footer"
+msgstr ""
+
+#: theme.json
+msgctxt "Template part name"
+msgid "Side navigation"
+msgstr ""
+
+#: theme.json
+msgctxt "Custom template name"
+msgid "Page without title"
+msgstr ""
+
+#: styles/g10-plus-g90.json
+msgctxt "Style variation name"
+msgid "g10 + g90 (softest contrast)"
+msgstr ""
+
+#: styles/g10-plus-g100.json
+msgctxt "Style variation name"
+msgid "g10 + g100 (softer light, strongest dark)"
+msgstr ""
+
+#: styles/white-plus-g90.json
+msgctxt "Style variation name"
+msgid "White + g90 (softer dark)"
+msgstr ""
+
+#: styles/white-plus-g100.json
+msgctxt "Style variation name"
+msgid "White + g100 (default)"
+msgstr ""

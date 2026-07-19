@@ -1,0 +1,15 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"title": "White + g90 (softer dark)",
+	"settings": {
+		"custom": {
+			"ui-shell": {
+				"themeScope": {
+					"light": "white",
+					"dark": "g90"
+				}
+			}
+		}
+	}
+}

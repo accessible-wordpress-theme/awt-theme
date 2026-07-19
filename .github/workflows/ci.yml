@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  premium-guard:
+    name: No premium code in free repo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail if AWT Premium code leaked in
+        run: bash scripts/check-no-premium.sh
+
+  lint:
+    name: Lint (ESLint, PHPCS, markdownlint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Install composer dependencies
+        run: composer install --no-interaction --no-progress
+      - name: ESLint
+        run: npm run lint:js
+      - name: PHPCS
+        run: npm run lint:php
+      - name: markdownlint
+        run: npm run lint:md
+      - name: Foundation CSS partial list
+        run: npm run check:foundation
+      - name: Foundation CSS is freshly built
+        run: |
+          npm run build:css
+          git diff --exit-code assets/css/foundation.min.css

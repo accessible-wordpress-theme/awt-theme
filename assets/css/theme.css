@@ -1,0 +1,3583 @@
+/*
+ * AWT theme baseline overrides on top of @carbon/styles.
+ *
+ * Carbon's pre-built styles.css bundles all four themes (white/g10/g90/g100)
+ * with each defining :root tokens. CSS cascade means the LAST :root (g100, dark)
+ * wins by default — which is why form fields, toggles, etc. were invisible
+ * (dark colors on a white page). Carbon also ships a .cds--white class scope
+ * that re-declares every token with white-theme values; we apply it to <body>
+ * via the body_class filter in functions.php so the entire document inherits
+ * white-theme tokens.
+ *
+ * Everything else here is glue: layout for the fixed UI shell header, list
+ * marker spacing, a Stage 0 menu positioning override (Carbon's React menu
+ * uses floating-ui to portal-position — Stage 1 territory), and a minimal
+ * vertical rhythm between blocks. Stage 1 layout templates will replace the
+ * vertical-rhythm rule with proper Carbon spacing tokens.
+ */
+
+/* --------------------------------------------------------------------------
+   Carbon spacing tokens.
+
+   The carbon.min.css build we ship does NOT declare `--cds-spacing-*` at
+   :root — those tokens are defined in @carbon/layout but get tree-shaken
+   out unless a component references them. Blocks that style themselves with
+   `var(--cds-spacing-06)` then fall back to whatever default (often 0) and
+   produce zero-padding boxes on the published page.
+
+   We mirror the Carbon Layout spacing scale here so any block referencing
+   `--cds-spacing-NN` resolves to the documented value in both editor and
+   front-end. Values come from the official Carbon spacing tokens:
+   https://carbondesignsystem.com/elements/spacing/overview/
+   -------------------------------------------------------------------------- */
+:root {
+	--cds-spacing-01: 0.125rem; /*  2px */
+	--cds-spacing-02: 0.25rem;  /*  4px */
+	--cds-spacing-03: 0.5rem;   /*  8px */
+	--cds-spacing-04: 0.75rem;  /* 12px */
+	--cds-spacing-05: 1rem;     /* 16px */
+	--cds-spacing-06: 1.5rem;   /* 24px */
+	--cds-spacing-07: 2rem;     /* 32px */
+	--cds-spacing-08: 2.5rem;   /* 40px */
+	--cds-spacing-09: 3rem;     /* 48px */
+	--cds-spacing-10: 4rem;     /* 64px */
+	--cds-spacing-11: 5rem;     /* 80px */
+	--cds-spacing-12: 6rem;     /* 96px */
+	--cds-spacing-13: 10rem;    /* 160px */
+}
+
+/* --------------------------------------------------------------------------
+   Per-block Spacing control (the "Spacing" panel injected into every
+   top-level AWT block). Sets the block's BOTTOM margin from a Carbon spacing
+   token; the default applied to every top-level block is spacing-05 (1rem).
+   The class is emitted by the render_block filter (front-end) and the
+   editor.BlockListBlock filter (canvas), so the value shows in both contexts
+   without re-saving. `!important` makes the author's chosen token (and the
+   spacing-05 default) authoritative over the legacy section/form rhythm rules
+   below, which set their own margin-block-end on the same blocks.
+   -------------------------------------------------------------------------- */
+.awt-spacing-01 { margin-block-end: var(--cds-spacing-01, 0.125rem) !important; }
+.awt-spacing-02 { margin-block-end: var(--cds-spacing-02, 0.25rem) !important; }
+.awt-spacing-03 { margin-block-end: var(--cds-spacing-03, 0.5rem) !important; }
+.awt-spacing-04 { margin-block-end: var(--cds-spacing-04, 0.75rem) !important; }
+.awt-spacing-05 { margin-block-end: var(--cds-spacing-05, 1rem) !important; }
+.awt-spacing-06 { margin-block-end: var(--cds-spacing-06, 1.5rem) !important; }
+.awt-spacing-07 { margin-block-end: var(--cds-spacing-07, 2rem) !important; }
+.awt-spacing-08 { margin-block-end: var(--cds-spacing-08, 2.5rem) !important; }
+.awt-spacing-09 { margin-block-end: var(--cds-spacing-09, 3rem) !important; }
+.awt-spacing-10 { margin-block-end: var(--cds-spacing-10, 4rem) !important; }
+.awt-spacing-11 { margin-block-end: var(--cds-spacing-11, 5rem) !important; }
+.awt-spacing-12 { margin-block-end: var(--cds-spacing-12, 6rem) !important; }
+.awt-spacing-13 { margin-block-end: var(--cds-spacing-13, 10rem) !important; }
+/* Children of a horizontal inline-set are laid out by the set's flex `gap`;
+   suppress the per-block bottom margin there so it doesn't add vertical
+   space inside the row (matches the existing editor reset). */
+.awt-inline-set > [class*="awt-spacing-"] { margin-block-end: 0 !important; }
+
+/* UI-shell layout containers (the header bar + the side nav) are fixed-height
+   / structurally laid out, so a content block dropped inside them (e.g. a
+   Button in the header's global slot) must not carry the per-block Spacing
+   bottom margin — it overflows / vertically misaligns the row. UI-shell
+   *structural* blocks already opt out of Spacing, but ordinary content blocks
+   placed inside them don't, so neutralize the utility for ANY descendant of
+   these containers. Applies in both the front end and the editor canvas
+   (the editor block wrapper carries the same awt-spacing-NN class). */
+.cds--header [class*="awt-spacing-"],
+.cds--side-nav [class*="awt-spacing-"] {
+	margin-block-end: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Positioning contexts — Carbon visually hides several inputs (checkbox, radio,
+   toggle) with position: absolute; clip: rect(0,0,0,0). Each parent wrapper
+   must establish its own positioning context, otherwise the absolute input
+   escapes to the nearest positioned ancestor (often the iframe body in the
+   editor canvas, snapping the whole block to the top-left of the screen).
+   -------------------------------------------------------------------------- */
+
+.cds--toggle,
+.cds--checkbox-wrapper,
+.cds--radio-button-wrapper,
+.cds--form-item {
+	position: relative;
+}
+
+/* Field wrapper is the positioning context for absolute children:
+ *   - password-input visibility toggle (anchored right edge)
+ *   - invalid/warning icon
+ * Carbon's compiled CSS sets this via `.cds--text-input__field-wrapper`
+ * directly; mirrored here so the rule is present even when @carbon/styles
+ * isn't loaded for any reason. */
+.cds--text-input__field-wrapper {
+	position: relative;
+	/* Flex so the wrapper hugs the input's box exactly. As a plain block it
+	   left ~8px of inline descender space below the input, making it taller
+	   than the input — which threw the absolutely-positioned, full-height
+	   password visibility toggle (and status icons) ~4px below the input's
+	   vertical center. Matches Carbon's own field-wrapper display. */
+	display: flex;
+}
+
+/* Password input — Carbon's visibility-toggle button.
+ * Carbon's CSS hangs positioning off the combined selector
+ * `.cds--text-input--password__visibility__toggle.cds--tooltip__trigger`.
+ * Our render uses the `__visibility__toggle` class without the tooltip
+ * wrapper, so we apply the positioning rules directly here: anchor to the
+ * right edge, fill the full input height, keep the icon centered, and pad
+ * the input so its text doesn't run under the toggle.
+ */
+.cds--password-input {
+	padding-inline-end: 2.5rem;
+}
+
+.cds--text-input--password__visibility__toggle {
+	position: absolute;
+	/* `inset-block: 0` (top:0 + bottom:0) stretches the toggle to exactly the
+	   field-wrapper's height geometrically. `block-size: 100%` was resolving
+	   to the wrong height (48px vs the 40px wrapper), pushing the centered eye
+	   icon ~4px below the input's vertical center. */
+	inset-inline-end: 0;
+	inline-size: 2.5rem;
+	/* A button min-block-size (Carbon/editor default ~48px) forces the toggle
+	   taller than the 40px field-wrapper no matter how we set top/bottom/height.
+	   So instead of stretching it, vertically CENTER the whole toggle on the
+	   field-wrapper (which the input fills) — the icon, centered within the
+	   toggle, then lands on the input's vertical center regardless of the
+	   toggle's own height. */
+	inset-block-start: 50%;
+	transform: translateY(-50%);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	margin: 0;
+	background: transparent;
+	border: 0;
+	color: var(--cds-icon-primary, #161616);
+	cursor: pointer;
+}
+
+.cds--text-input--password__visibility__toggle:hover {
+	color: var(--cds-icon-primary-hover, #393939);
+}
+
+.cds--text-input--password__visibility__toggle:focus,
+.cds--text-input--password__visibility__toggle:focus-visible {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+/* Disabled password field — the visibility toggle must look + behave disabled
+   too (Carbon mutes it to the disabled icon color and makes it non-interactive).
+   Without this it stayed solid black and clickable on a disabled field. */
+.cds--text-input--password__visibility__toggle:disabled {
+	color: var(--cds-icon-disabled, #c6c6c6);
+	cursor: not-allowed;
+}
+.cds--text-input--password__visibility__toggle:disabled:hover {
+	color: var(--cds-icon-disabled, #c6c6c6);
+}
+
+/* Explicit solid focus indicators for form inputs.
+ *
+ * Carbon's compiled CSS sets `outline-style: dotted` inside an
+ * `@media (prefers-contrast)` block. On systems where the OS has high-
+ * contrast / increased-contrast enabled (macOS Accessibility, Windows
+ * High Contrast Mode), that media query activates and the focus indicator
+ * becomes dotted everywhere. For everyone else the default is solid.
+ *
+ * Carbon's selectors are also low-specificity (one class), so Firefox's
+ * dotted browser default sometimes leaks through on some controls. Force
+ * solid here to make the appearance consistent across browsers; the
+ * prefers-contrast block below explicitly opts dotted in when the user
+ * has asked for it.
+ */
+.cds--text-input:focus,
+.cds--text-input:focus-visible,
+.cds--text-area:focus,
+.cds--text-area:focus-visible {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+	outline-style: solid;
+}
+
+/* Textarea: fill the wrapper width.
+ *
+ * Carbon's `.cds--text-area__wrapper` is `display: flex` with no
+ * `flex-direction` override on the non-fluid variant, so the textarea sits
+ * as a row-direction flex child with `flex: 0 1 auto` (no grow). With no
+ * intrinsic width hint, browsers fall back to the textarea's default
+ * 20-cols intrinsic width (~190px), leaving the wrapper full-width but
+ * the textarea floating to the left. The Carbon-spec `.cds--text-area__invalid-icon`
+ * is absolutely positioned at the wrapper's right edge (16px in) — when
+ * the textarea doesn't fill the wrapper, the icon visually sits OUTSIDE
+ * the textarea rather than inside its top-right corner.
+ *
+ * Carbon's React component probably sets `cols={50}` or similar inline,
+ * which we can't reproduce server-side cleanly. Easier fix: tell the
+ * textarea to fill its wrapper. */
+.cds--text-area {
+	inline-size: 100%;
+}
+
+/* …unless an explicit `cols` is set (awt/text-area "Cols" control). The
+   `[cols]` attribute selector (0,1,1) beats the rule above (0,1,0), so the
+   textarea sizes to its column count instead of filling the wrapper. Render
+   only emits `cols` when > 0, so the default stays full-width. */
+.cds--text-area[cols] {
+	inline-size: auto;
+	max-inline-size: 100%;
+}
+
+@media (prefers-contrast: more) {
+	.cds--text-input:focus,
+	.cds--text-input:focus-visible,
+	.cds--text-area:focus,
+	.cds--text-area:focus-visible {
+		outline-style: dotted;
+	}
+}
+
+/* Fluid text-input — Carbon's spec places the label at `inset-block-start:
+ * 0.8125rem` (height 1rem) and the input at `padding-block-start: 2rem`,
+ * leaving only ~3px between the label baseline and the input text. Authors
+ * consistently read this as too cramped, so AWT bumps both: label sits a
+ * little higher and the input text starts a bit lower. */
+.cds--text-input--fluid .cds--label {
+	inset-block-start: 0.625rem;
+}
+
+.cds--text-input--fluid .cds--text-input {
+	padding-block: 2.25rem 0.625rem;
+	min-block-size: 4.25rem;
+}
+
+/* Inline text-input variant.
+ *
+ * Carbon's compiled CSS sets `flex-flow: row nowrap; align-items: center` on
+ * the inline wrapper, but doesn't set `display: flex` — that's expected to
+ * come from a wrapping FormGroup or similar. Inline AWT usage needs the flex
+ * context explicitly, plus a sensible label / input proportion so the row
+ * doesn't collapse to all-label or all-input.
+ *
+ * Label takes its content width with a minimum baseline; the field outer
+ * wrapper takes the remaining row width. Gap separates them. The field
+ * also stops growing past a sensible max so very wide containers don't
+ * stretch the input across the whole row. */
+.cds--text-input-wrapper--inline {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	gap: 1rem;
+}
+
+.cds--text-input-wrapper--inline > .cds--label,
+.cds--text-input-wrapper--inline > .cds--label--inline {
+	flex: 0 0 auto;
+	min-inline-size: 8rem;
+	margin: 0;
+	padding: 0;
+	font-weight: 400;
+	color: var(--cds-text-primary, #161616);
+}
+
+.cds--text-input-wrapper--inline > .cds--text-input__field-outer-wrapper {
+	flex: 1 1 auto;
+	min-inline-size: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Base document
+   -------------------------------------------------------------------------- */
+
+html {
+	scroll-behavior: smooth;
+}
+
+body.cds--white {
+	margin: 0;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+	color: var(--cds-text-primary, #161616);
+	background-color: var(--cds-background, #ffffff);
+}
+
+/* --------------------------------------------------------------------------
+   UI shell — Carbon header is position: fixed; height: 3rem (z-index 8000).
+   The page needs top padding to clear it.
+
+   Logged-in admins also see the WordPress admin bar (32px desktop, 46px mobile),
+   which is `position: fixed; top: 0; z-index: 99999`. By default it overlays
+   the Carbon header. We push the Carbon header down by the admin-bar height
+   when `body.admin-bar` is present so both layers coexist. Regular visitors
+   (no admin bar) are unaffected.
+   -------------------------------------------------------------------------- */
+
+.cds--content {
+	display: block;
+	padding: 2rem 1rem;
+	/* `!important` is needed because the block-template's `<main>` carries an
+	 * INLINE `padding-top: var(--wp--preset--spacing--07)` that WP renders
+	 * from the group block's spacing.padding.top attribute. Inline styles
+	 * beat every selector at every specificity — `!important` is the only
+	 * cascade level that wins. The override is essential: without enough
+	 * padding-block-start the content renders BEHIND the fixed header,
+	 * with no visual gap between header bottom and first content row. */
+	padding-block-start: calc(3rem + 2rem) !important; /* Carbon header height + breathing room */
+	background: var(--cds-background, #ffffff);
+	flex: 1 0 auto;
+}
+
+@media (min-width: 672px) {
+	.cds--content {
+		padding-inline: 2rem;
+	}
+}
+
+/* Anchor-target offset for the fixed header.
+ *
+ * The skip-link, in-page TOC links, and any URL with a `#fragment` hash
+ * scroll the target into view. The browser puts the target at viewport
+ * y=0 (or honors `scroll-padding-block-start` on the scroll container).
+ * With a fixed header overlaying the top of the viewport, the target
+ * lands UNDER the header. `scroll-margin-block-start` on the target
+ * tells the browser to leave room above it during scroll — equal to
+ * the fixed header's height plus visual breathing room.
+ *
+ * `:where([id])` keeps specificity at 0 so any per-element override
+ * (a block that doesn't want this offset for some reason) wins naturally.
+ * Anchor targets are virtually always elements with IDs, so this catches
+ * the right scope without being overly broad.
+ *
+ * Admin-bar variant adds 32px (or 46px on narrow viewports) for WP's
+ * fixed admin bar on top of the Carbon header. */
+:where([id]) {
+	scroll-margin-block-start: 4rem; /* 3rem header + 1rem breathing */
+}
+.admin-bar :where([id]) {
+	scroll-margin-block-start: calc(32px + 4rem);
+}
+@media screen and (max-width: 782px) {
+	.admin-bar :where([id]) {
+		scroll-margin-block-start: calc(46px + 4rem);
+	}
+}
+
+/* Side-nav offset.
+
+   The persistent side-nav uses `position: fixed` and overlays the leftmost
+   16rem of the viewport. Without this rule, `.cds--content` extends under
+   the side-nav and content gets clipped on the left when the centered
+   contentSize gets wide enough to collide with the side-nav's footprint.
+
+   Carbon's React UI Shell applies an equivalent offset via component-level
+   styling; we replicate it here at the theme level since we render through
+   WordPress block templates rather than Carbon's React `<Content>` component.
+
+   Only applied at the side-nav collapse breakpoint (672px / Carbon md) and
+   above — below that, side-nav becomes overlay-only and content is full-width. */
+@media (min-width: 672px) {
+	body:has(.cds--side-nav--persistent) .cds--content,
+	body:has(.cds--side-nav--rail) .cds--content {
+		margin-inline-start: 16rem;
+	}
+
+	body:has(.cds--side-nav--rail:not(.cds--side-nav--expanded)) .cds--content {
+		margin-inline-start: 3rem;       /* rail collapsed = icon-only width */
+	}
+}
+
+/* Admin-bar offset — applied when WordPress is rendering the admin bar above
+   the Carbon UI shell. Mirrors WP core's own breakpoint: 46px tall ≤782px,
+   32px tall otherwise. */
+.admin-bar .cds--header {
+	inset-block-start: 32px;
+}
+
+.admin-bar .cds--content {
+	/* !important matches the base .cds--content rule — both override the
+	 * WP template's inline padding-top. Without !important the admin-bar
+	 * variant has higher specificity but loses to the base rule's
+	 * !important. */
+	padding-block-start: calc(32px + 3rem + 2rem) !important;
+}
+
+@media screen and (max-width: 782px) {
+	.admin-bar .cds--header {
+		inset-block-start: 46px;
+	}
+
+	.admin-bar .cds--content {
+		padding-block-start: calc(46px + 3rem + 2rem) !important;
+	}
+}
+
+/* "Page without title" template: no post-title renders, so the base clearance
+   above leaves an empty band where the title would sit. Two adjustments so the
+   first block — typically a full-bleed hero with its own top padding — sits
+   flush under the header:
+   1. Drop the 2rem breathing (it exists to separate the title from the header)
+      so clearance is exactly the header height (3rem). The admin bar needs no
+      extra offset here: WordPress already sets `html { margin-top }` for it,
+      and the header's own `inset-block-start` shifts with it, so 3rem clears
+      the header in both logged-in and logged-out views.
+   2. Remove the 1rem block-gap margin WordPress puts between the header
+      template part and <main>, which would otherwise leave a 1rem strip of
+      page background between the header and the hero's coloured section.
+   Higher specificity than the base/admin-bar rules so it wins the !important tie. */
+.page-template-page-no-title .cds--content {
+	margin-block-start: 0 !important;
+	padding-block-start: 3rem !important; /* header height only, no title breathing */
+}
+
+/* Header CTA ("Get started"): fill the full header height with the label
+ * vertically centered. The action group (`.cds--header__global`) keeps its
+ * default `align-items: stretch` so the button spans the whole bar with no gaps
+ * (a shrunken button would leave the dark header showing above/below it).
+ * Carbon's `.cds--btn` sets no `align-items`, so a stretched button pins its
+ * label to the top via the fixed padding-block — `align-items: center` here
+ * recenters it. `block-size: 100%` makes the button exactly the header height. */
+.cds--header__global .cds--btn {
+	align-items: center;
+	block-size: 100%;
+}
+
+/* Stage 0 dogfood: keep the WP search input visible inside the dark header. */
+.cds--header__global .wp-block-search__input {
+	background: var(--cds-field-01, #393939);
+	color: var(--cds-text-on-color, #ffffff);
+	border: 0;
+	padding: 0.5rem 0.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   Skip-to-content link — Carbon visually-hidden pattern with on-focus reveal.
+   -------------------------------------------------------------------------- */
+
+.cds--skip-to-content {
+	position: absolute;
+	inset-inline-start: -10000px;
+	inset-block-start: auto;
+	inline-size: 1px;
+	block-size: 1px;
+	overflow: hidden;
+	z-index: 9999;
+	background: var(--cds-interactive, #0f62fe);
+	color: var(--cds-text-on-color, #ffffff);
+	padding: 0.75rem 1rem;
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.cds--skip-to-content:focus {
+	inset-inline-start: 0;
+	inset-block-start: 0;
+	inline-size: auto;
+	block-size: auto;
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+/* --------------------------------------------------------------------------
+   Lists — Carbon's reset zeroes padding and uses ::before pseudo-elements for
+   markers at inset-inline-start: -1rem. Without parent padding the markers
+   land in negative space (or get clipped). Force block display and reserve
+   padding so the markers fall inside the visible area.
+   -------------------------------------------------------------------------- */
+
+.cds--list--unordered,
+.cds--list--ordered,
+.cds--list--ordered--native {
+	display: block;
+	padding-inline-start: 1.5rem;
+	margin-block: 0;
+}
+
+.cds--list--unordered {
+	list-style: none;
+}
+
+.cds--list--ordered--native {
+	list-style: decimal outside;
+}
+
+.cds--list__item {
+	margin-block-end: 0.25rem;
+}
+
+/* Nested lists — when a list contains another list as an inner block, the
+ * inner list still gets its own padding-inline-start, producing a visual
+ * indent matching Carbon's nested-list reference (no extra rules needed). */
+
+/* --------------------------------------------------------------------------
+   Link icon — Carbon's compiled CSS sets `.cds--link__icon > svg` to 1.25rem
+   (20px), which is larger than the surrounding 14px md-link text and ends up
+   bigger than Carbon's own marketing/docs reference. Override to 1rem (16px)
+   so the icon sits proportional to the link text — matches Carbon's React
+   <Link renderIcon> default rendering.
+   -------------------------------------------------------------------------- */
+
+.cds--link__icon,
+.cds--link__icon > svg {
+	block-size: 1rem;
+	inline-size: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Breadcrumb — Carbon scopes the <nav> to display: inline, which lets the <ol>
+   pop out as a block in unpredictable ways. Force block display + flex on the
+   list so items lay out horizontally with Carbon's "/" separators.
+   -------------------------------------------------------------------------- */
+
+.cds--breadcrumb {
+	display: block;
+}
+
+.cds--breadcrumb__list {
+	display: flex;
+	flex-wrap: wrap;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.cds--breadcrumb-item {
+	margin-inline-end: 0.5rem;
+}
+
+/* Carbon's breadcrumb-item::after pseudo-element emits the "/" separator
+ * after every item — including the last one — by default. The
+ * `cds--breadcrumb--no-trailing-slash` modifier (set via the awt/breadcrumb
+ * block's noTrailingSlash attribute) is what suppresses the last item's
+ * trailing slash. Don't kill the :last-child::after globally here, or the
+ * modifier becomes a no-op. */
+
+/* Auto-emit breadcrumb sits just inside <main>; small block-end margin
+   separates it from the page heading below. */
+.awt-breadcrumb-auto {
+	margin-block-end: 1rem;
+}
+
+@media (max-width: 671px) {
+	.awt-breadcrumb-auto--hide-mobile {
+		display: none;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   Form — Carbon ships no .cds--form rule; it relies on the consumer to lay out
+   children. Stage 0: force block display, vertical stacking, basic padding so
+   the form is visibly a form.
+   -------------------------------------------------------------------------- */
+
+.cds--form {
+	display: block;
+	padding: 1rem 0;
+}
+
+.cds--form__header {
+	margin-block-end: 1.5rem;
+}
+
+.cds--form__title {
+	margin-block-end: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Radio button group — <fieldset> needs explicit border:0 (browser default
+   has a border that Carbon's reset only removes via .cds--radio-button-group
+   * selector — but the fieldset itself isn't matched). Also ensure the radio
+   appearance circle is visible (it's an empty <span> with border styling).
+   -------------------------------------------------------------------------- */
+
+.cds--radio-button-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	padding: 0.5rem 0 0;
+	border: 0;
+	margin: 0;
+	min-inline-size: 0;
+}
+
+.cds--radio-button-group--vertical {
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.cds--radio-button-group legend.cds--label {
+	display: block;
+	margin-block-end: 0.5rem;
+	font-weight: 600;
+	flex-basis: 100%;
+}
+
+.cds--radio-button-wrapper {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.cds--radio-button__label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	cursor: pointer;
+}
+
+.cds--radio-button__appearance {
+	display: inline-block;
+	inline-size: 1.125rem;
+	block-size: 1.125rem;
+	border: 1px solid var(--cds-icon-primary, #161616);
+	border-radius: 50%;
+	background: transparent;
+	flex-shrink: 0;
+}
+
+.cds--radio-button:checked + .cds--radio-button__label .cds--radio-button__appearance {
+	border-color: var(--cds-icon-primary, #161616);
+	background:
+		radial-gradient(
+			circle,
+			var(--cds-icon-primary, #161616) 0 0.3125rem,
+			transparent 0.3125rem
+		);
+}
+
+.cds--radio-button:focus + .cds--radio-button__label .cds--radio-button__appearance {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Menu button — positioning runs through @floating-ui/dom in
+   src/menu-button/view.js. CSS here only owns appearance + the hidden state;
+   the floating element gets `position: fixed` + computed top/left from the
+   view-side store, so no inset-* rule is needed and the menu flips/shifts at
+   viewport edges automatically.
+   -------------------------------------------------------------------------- */
+
+/* Side nav — three Stage-0 misalignments with Carbon's compiled CSS.
+ *
+ * 1. Menu collapsed by default. Carbon's `.cds--side-nav__menu` rule is
+ *    `max-block-size: 0; visibility: hidden`, and a sibling button
+ *    `.cds--side-nav__submenu[aria-expanded=true]+.cds--side-nav__menu`
+ *    is what flips it open. Our render uses a static `__heading` div as
+ *    the section title (no toggle button, no `aria-expanded`), so
+ *    Carbon's open rule never matches and the link list stayed hidden
+ *    forever — only the heading text was visible, and even that looked
+ *    wrong because the empty hidden menus left blank space below each
+ *    heading. Open the menu wherever a `__heading` sibling exists.
+ *
+ * 2. Rail-mode initial-fallback char visible in expanded mode. The
+ *    render injects `<span class="...icon--initial-fallback">{first
+ *    char}</span>` as a fallback icon for when the nav is collapsed to
+ *    rail mode. That span is meant to ONLY appear in rail mode; in
+ *    expanded mode the actual text label takes its place. Carbon
+ *    doesn't ship a rule that hides it on expansion — Carbon's React
+ *    component doesn't render the initial-fallback in the first place.
+ *    Add the missing visibility toggle ourselves.
+ *
+ * 3. Admin-bar overlap. WP's logged-in admin bar is fixed at top: 0
+ *    with z-index above the page, so the side-nav (also fixed at
+ *    top: 0) gets its first 32px clipped behind the admin bar. Same
+ *    pattern the header had — push the side-nav down 32px when
+ *    `.admin-bar` is on the body (46px in the mobile admin-bar size).
+ */
+.cds--side-nav__heading + .cds--side-nav__menu {
+	max-block-size: none;
+	visibility: inherit;
+}
+
+.cds--side-nav--expanded .cds--side-nav__icon--initial-fallback,
+.cds--side-nav--persistent .cds--side-nav__icon--initial-fallback {
+	display: none;
+}
+
+.admin-bar .cds--side-nav {
+	inset-block-start: 32px;
+}
+@media screen and (max-width: 782px) {
+	.admin-bar .cds--side-nav {
+		inset-block-start: 46px;
+	}
+}
+
+/* Header action buttons — center their icons.
+ *
+ * Carbon's `.cds--header__action` rule is `display: inline-flex;
+ * block-size: 3rem; inline-size: 3rem` (48x48), but it does NOT set
+ * `align-items` / `justify-content`. The icon child therefore falls
+ * back to flex's stretch defaults: it grows to fill the cross axis,
+ * which is why our SVG icons rendered pinned to the top-left corner
+ * of every header button (search, account, color-scheme toggle, etc.).
+ *
+ * One centering rule on every `.cds--header__action` covers every
+ * AWT block that lands a button in the header: awt/header-action
+ * (search, account, custom-icon variants) AND
+ * awt/color-scheme-toggle (the icon-only variant).
+ *
+ * The color-scheme toggle additionally wraps its icon in a
+ * `__icon` span — give that span flex centering too so the SVG it
+ * holds is centered within the span, not just within the button. */
+/* Header brand logo. Carbon's React component sizes this inline (per-instance
+ * prop). Our compiled `carbon.min.css` ships with no `.cds--header__logo`
+ * rule, so a raw <img> would render at intrinsic dimensions and blow up the
+ * 3rem header.
+ *
+ * The parent `.cds--header__name` is `display: flex`, so the img is a flex
+ * child. Earlier this rule used `max-block-size: 1.5rem` + `inline-size: auto`
+ * — that turns out to be a chicken-and-egg in flex: the img reports 0px
+ * intrinsic width (its `inline-size: auto` defers to flex available space),
+ * the parent shrinks to padding-only width because its child is 0px, the
+ * img then has no space, and stays 0×0. Most visible on logo-only brand
+ * mode with an SVG (no other content in the link to give the parent width).
+ *
+ * Fix: explicit `block-size: 1.5rem` so the img has a fixed height. The
+ * browser then derives width from the intrinsic aspect ratio — independent
+ * of parent constraints. `flex: 0 0 auto` makes sure flex doesn't try to
+ * shrink the now-correctly-sized img back to 0. `max-inline-size` caps
+ * width so a comically wide logo can't push the rest of the header off
+ * screen.
+ *
+ * Add the sibling-spacing rule so an accompanying text label doesn't run
+ * flush against the logo. */
+.cds--header__logo {
+	block-size: 1.5rem;
+	inline-size: auto;
+	max-inline-size: 12rem;
+	flex: 0 0 auto;
+}
+.cds--header__logo + .cds--header__name--text,
+.cds--header__logo + .cds--header__name--prefix {
+	margin-inline-start: 0.5rem;
+}
+
+/* Dual-logo light/dark swap.
+ *
+ * When the user configures BOTH a light-mode and a dark-mode logo in AWT
+ * Settings → Identity, render.php emits two <img> elements side-by-side
+ * with `--light` and `--dark` modifier classes. CSS keys on the
+ * `data-awt-color-scheme` attribute on <html> (set by the pre-paint
+ * script — see functions.php) to show the appropriate one:
+ *
+ *   - Default (no attribute / light): show --light, hide --dark
+ *   - data-awt-color-scheme="dark":   show --dark,  hide --light
+ *
+ * The color-scheme toggle block (awt/color-scheme-toggle) rewrites that
+ * attribute live without a page reload, so the logo swap is reactive
+ * with zero JS in this block — pure CSS keying on the document state.
+ *
+ * Single-logo mode (no dark URL set) emits only `.cds--header__logo`
+ * without either modifier — the bare-class element is always visible
+ * since these rules only target the modifier-suffixed variants. */
+.cds--header__logo--dark { display: none; }
+[data-awt-color-scheme="dark"] .cds--header__logo--light { display: none; }
+[data-awt-color-scheme="dark"] .cds--header__logo--dark  { display: block; }
+
+/*
+ * "Header color" override (AWT Settings → Carbon → Header color = Always
+ * light / Always dark). When the header carries its own forced Carbon scope
+ * class, the logo must follow THAT scope rather than the page's
+ * `data-awt-color-scheme` — otherwise a dark-on-dark (or light-on-light) logo
+ * renders with no contrast. These scope-scoped selectors (0,3,0) outrank the
+ * page-scheme rules (0,2,0) and only match when the header is pinned (default
+ * mode leaves the header with no scope class, so the page-scheme rules apply).
+ */
+.cds--header.cds--g90  .cds--header__logo--light,
+.cds--header.cds--g100 .cds--header__logo--light { display: none; }
+.cds--header.cds--g90  .cds--header__logo--dark,
+.cds--header.cds--g100 .cds--header__logo--dark  { display: block; }
+.cds--header.cds--white .cds--header__logo--dark,
+.cds--header.cds--g10   .cds--header__logo--dark  { display: none; }
+.cds--header.cds--white .cds--header__logo--light,
+.cds--header.cds--g10   .cds--header__logo--light { display: block; }
+
+.cds--header__action {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-inline-size: 3rem;
+	block-size: 3rem;
+	padding: 0 1rem;
+	background: transparent;
+	border: 0;
+	color: inherit;
+	cursor: pointer;
+}
+.cds--header__action svg,
+.cds--header__action .cds--header__action-icon {
+	inline-size: 1.25rem;
+	block-size: 1.25rem;
+	/* The action button is 3rem wide with 1rem inline padding → only 1rem of
+	 * content width, so as a flex child the 1.25rem icon would shrink to 1rem.
+	 * Keep it at its intended 20px (it just overflows into the padding). */
+	flex-shrink: 0;
+}
+.cds--header__action-label {
+	margin-inline-start: 0.5rem;
+}
+.cds--header__action:hover {
+	background: var(--cds-background-hover, rgba(141, 141, 141, 0.12));
+}
+.cds--header__action:focus-visible {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+/* Responsive header navigation (awt/header-nav + awt/header-menu).
+ *
+ * Carbon's bundled CSS already does most of the work:
+ *   - `.cds--header__nav` is hidden below 66rem (lg) and shown at/above it.
+ *   - The hamburger carries `.cds--header__menu-toggle__hidden`, which Carbon
+ *     hides at/above 66rem — so the trigger only shows on small screens.
+ *   - Submenus (`.cds--header__menu`) reveal via the adjacency rule
+ *     `.cds--header__menu-title[aria-expanded="true"] + .cds--header__menu`
+ *     as an absolutely-positioned desktop dropdown.
+ *
+ * On mobile these rules reproduce Carbon's UI Shell SideNav behavior: the
+ * hamburger leads the header (far left), and the nav becomes a 16rem panel
+ * fixed to the left edge that slides in from the left below the header bar
+ * when the trigger flips `navOpen` (adding `.awt-nav-open`). A dimmed backdrop
+ * closes it on tap; submenus expand inline (accordion). The `display:contents`
+ * wrapper keeps the trigger + nav in the header's flex flow. */
+.awt-header-nav__trigger {
+	align-items: center;
+	justify-content: center;
+}
+/* The trigger holds two icon spans (menu + close); `display: contents` lets
+ * the visible one's SVG be centered by the button's own flex, while the
+ * hidden one is removed. Re-assert `[hidden]` so it beats author display. */
+.awt-header-nav__icon {
+	display: contents;
+}
+.awt-header-nav__icon[hidden] {
+	display: none;
+}
+/* Hide the hamburger on desktop. Carbon hides `.cds--header__menu-toggle__hidden`
+ * at >=66rem, but AWT's own `.cds--header__action { display: inline-flex }`
+ * (loaded later, equal specificity) would otherwise win and keep it showing.
+ * Re-assert the hide here, after that rule, so the trigger is mobile-only. */
+@media (min-width: 66rem) {
+	.awt-header-nav__trigger {
+		display: none;
+	}
+}
+
+/* The slide-in backdrop only exists on small screens (added when open). */
+.awt-header-nav__overlay {
+	display: none;
+}
+
+@media (max-width: 65.98rem) {
+	/* Match Carbon's UI Shell: the hamburger LEADS the header (far left),
+	 * brand follows it, and the action cluster stays pinned to the right.
+	 * (The header is normally space-between; on mobile we left-align and push
+	 * the global actions right so the trigger can sit first via order:-1.) */
+	.wp-block-group.cds--header {
+		justify-content: flex-start;
+		/* Drop the block-gap between header items on mobile so the hamburger,
+		 * logo and action icons sit flush (Carbon header items are gap-less). */
+		column-gap: 0;
+	}
+	.awt-header-nav__trigger {
+		order: -1;
+	}
+	.cds--header__global {
+		margin-inline-start: auto;
+	}
+	/* Drop Carbon's 16px inset on the logo area so it sits flush against the
+	 * leading hamburger on mobile. Selector matches Carbon's own
+	 * `a.cds--header__name` specificity (0,1,1) so theme.css's later source
+	 * order wins. */
+	a.cds--header__name {
+		padding-inline-start: 0;
+	}
+
+	/* The nav becomes Carbon's SideNav: a 16rem panel fixed to the left edge,
+	 * full height below the 3rem header bar, sliding in from the left
+	 * (translateX(-100%) -> 0) with Carbon's own .11s easing. */
+	.cds--header__nav {
+		display: block; /* override Carbon's mobile display:none so it can slide */
+		position: fixed;
+		inset-block-start: 3rem;
+		inset-inline-start: 0;
+		inline-size: 16rem;
+		max-inline-size: 80vw;
+		block-size: calc(100% - 3rem);
+		background: var(--cds-background, #ffffff);
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+		overflow-y: auto;
+		z-index: 8000;
+		transform: translateX(-100%);
+		visibility: hidden;
+		transition: transform 0.11s cubic-bezier(0.2, 0, 1, 0.9), visibility 0s linear 0.11s;
+	}
+	.cds--header__nav.awt-nav-open {
+		transform: translateX(0);
+		visibility: visible;
+		transition: transform 0.11s cubic-bezier(0.2, 0, 1, 0.9);
+	}
+	.cds--header__nav .cds--header__menu-bar {
+		flex-direction: column;
+		align-items: stretch;
+		block-size: auto;
+	}
+	.cds--header__nav .cds--header__menu-item {
+		block-size: auto;
+		min-block-size: 3rem;
+		inline-size: 100%;
+	}
+	/* Submenu = inline accordion inside the panel (not an absolute dropdown) */
+	.cds--header__nav .cds--header__submenu {
+		position: static;
+	}
+	.cds--header__nav .cds--header__menu-title[aria-expanded="true"] + .cds--header__menu {
+		position: static;
+		inset: auto;
+		transform: none;
+		box-shadow: none;
+		inline-size: 100%;
+		background: var(--cds-layer-01, #f4f4f4);
+	}
+
+	/* Dimmed backdrop (Carbon's side-nav overlay): tap outside to close. */
+	.awt-header-nav__overlay.awt-nav-open {
+		display: block;
+		position: fixed;
+		inset-block-start: 3rem;
+		inset-inline: 0;
+		inset-block-end: 0;
+		border: 0;
+		padding: 0;
+		margin: 0;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: 7999;
+		cursor: pointer;
+	}
+
+	/* Admin-bar offsets mirror the header's own (.admin-bar .cds--header):
+	 * 32px on wider admin screens, 46px at <=782px. */
+	.admin-bar .cds--header__nav {
+		inset-block-start: calc(32px + 3rem);
+		block-size: calc(100% - 32px - 3rem);
+	}
+	.admin-bar .awt-header-nav__overlay.awt-nav-open {
+		inset-block-start: calc(32px + 3rem);
+	}
+}
+
+@media (max-width: 782px) {
+	.admin-bar .cds--header__nav {
+		inset-block-start: calc(46px + 3rem);
+		block-size: calc(100% - 46px - 3rem);
+	}
+	.admin-bar .awt-header-nav__overlay.awt-nav-open {
+		inset-block-start: calc(46px + 3rem);
+	}
+}
+
+/* Header search inline-expand styles (awt/header-search) moved to AWT Premium
+ * (2026-06-01). The free header uses a plain search link (awt/header-action →
+ * /?s=), which needs no extra CSS. The inline-field styles now live in
+ * premium-staging/header-search/header-search.css. */
+
+/* Utility: hide an element below Carbon's lg breakpoint (66rem). Used on the
+ * Marketing header CTA, where the small-screen header has no room for a button.
+ * Add the "awt-hide-on-mobile" CSS class (block inspector → Advanced) to any
+ * block to drop it on phones/tablets. */
+@media (max-width: 65.98rem) {
+	.awt-hide-on-mobile { display: none !important; }
+}
+
+/* Mobile header: hide the brand's Site Title (+ optional prefix) text — the
+ * small-screen header has no room for it next to the menu button and actions.
+ * Applies to every preset (they all use awt/header-brand). The text is
+ * VISUALLY hidden, not removed: it stays in the accessibility tree so the
+ * brand link keeps its accessible name.
+ *
+ * Scoped to brands that actually show a LOGO (`.awt-brand--has-logo`, set by
+ * render.php) — the logo carries the brand on mobile. Text-only brands
+ * ("Site Title only" / "Site Title + prefix") have no logo, so their title +
+ * prefix stay visible on mobile. */
+@media (max-width: 65.98rem) {
+	.cds--header__name.awt-brand--has-logo .cds--header__name--text,
+	.cds--header__name.awt-brand--has-logo .cds--header__name--prefix {
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border: 0;
+	}
+}
+
+.awt-color-scheme-toggle__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.cds--menu-button {
+	display: inline-block;
+}
+
+/* Trigger button — Carbon's base button stacks vertically by default in our
+ * non-fluid layout; force inline-flex so the label and chevron sit on one
+ * row with proper baseline alignment. The chevron's gap to the label comes
+ * from Carbon's `.cds--btn .cds--btn__icon { margin-inline-start: 0.5rem }`.
+ * Carbon's CSS also handles the 110ms rotation when the trigger gains the
+ * `--open` modifier (mutated by view.js on toggle).
+ */
+.cds--menu-button__trigger {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+
+/* Carbon's compiled CSS sets `min-inline-size: 12rem` on the trigger — keep
+ * that so the trigger doesn't collapse to fit the label. */
+
+.cds--menu-button .cds--menu {
+	min-inline-size: 12rem;
+	background: var(--cds-layer-01, #ffffff);
+	border: 1px solid var(--cds-border-subtle, #e0e0e0);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+	z-index: 9000;
+	list-style: none;
+	margin: 0;
+	padding: 0.25rem 0;
+}
+
+/* Carbon's compiled CSS sets `.cds--menu { opacity: 0; visibility: hidden }`
+   and only flips opacity via the `.cds--menu--shown` class — visibility never
+   becomes visible in plain Carbon. We track open state via the `hidden`
+   attribute (mutated by view.js), so override here so removing `hidden` is
+   sufficient to make the menu visible. */
+.cds--menu-button .cds--menu:not([hidden]) {
+	opacity: 1;
+	visibility: visible;
+}
+
+.cds--menu-button .cds--menu[hidden] {
+	display: none;
+}
+
+/* Menu items follow Carbon's pattern: hover + focus visuals live on the
+ * `<li class="cds--menu-item">`, not on the inner button. That makes the
+ * focus dotted outline draw across the full row instead of just the
+ * button's bounding box, and prevents the neighboring row's hover
+ * background from visually clipping against the focused row's outline. */
+.cds--menu-button .cds--menu-item {
+	list-style: none;
+	margin: 0;
+	position: relative;
+	min-block-size: 2rem;
+}
+
+.cds--menu-button .cds--menu-item:hover {
+	background: var(--cds-layer-hover-01, #e8e8e8);
+}
+
+.cds--menu-button .cds--menu-item:focus-within {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+.cds--menu-button .cds--menu-item__button {
+	display: block;
+	inline-size: 100%;
+	padding: 0.375rem 1rem;
+	background: transparent;
+	border: 0;
+	color: var(--cds-text-primary, #161616);
+	text-align: start;
+	cursor: pointer;
+	font: inherit;
+}
+
+/* Suppress the inner button's native focus ring — the li now owns the focus
+ * indicator via :focus-within, so the button focus would double-up. */
+.cds--menu-button .cds--menu-item__button:focus,
+.cds--menu-button .cds--menu-item__button:focus-visible {
+	outline: none;
+}
+
+.cds--menu-button .cds--menu-item[aria-disabled="true"] {
+	background: transparent;
+	color: var(--cds-text-disabled, #16161640);
+	cursor: not-allowed;
+}
+
+.cds--menu-button .cds--menu-item[aria-disabled="true"] .cds--menu-item__button {
+	color: var(--cds-text-disabled, #16161640);
+	cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   Tooltip — positioning runs through @floating-ui/dom in src/tooltip/view.js
+   (Stage 1). The view-side helper sets `position: fixed` + computed top/left
+   directly, so we don't need an `inset-*` rule. CSS here only owns appearance
+   (background, padding, max-width) and the hidden state.
+   -------------------------------------------------------------------------- */
+
+.cds--tooltip {
+	display: inline-block;
+	position: relative; /* positioning context for the editor-preview placement */
+}
+
+.cds--tooltip__content {
+	padding: 0.5rem 0.75rem;
+	background: var(--cds-background-inverse, #393939);
+	color: var(--cds-text-inverse, #ffffff);
+	border-radius: 2px;
+	font-size: var(--cds-body-01-font-size, 0.875rem);
+	max-inline-size: 18rem;
+	min-inline-size: 8rem;
+	z-index: 9000;
+	pointer-events: none;
+}
+
+.cds--tooltip__content[hidden] {
+	display: none;
+}
+
+/* Caret — a small rotated square pointing from the tooltip toward its trigger,
+ * matching Carbon. Keyed on `data-placement`, which is the ACTUAL placement:
+ * floating-ui sets it at runtime on the front-end (so the caret follows a flip),
+ * and the editor sets it from the chosen alignment. Works regardless of how the
+ * box itself is positioned (front-end: position:fixed via floating-ui; editor:
+ * position:absolute via the rules below). */
+.cds--tooltip__content[data-placement]::after {
+	content: '';
+	position: absolute;
+	inline-size: 0.5rem;
+	block-size: 0.5rem;
+	background: var(--cds-background-inverse, #393939);
+	transform: rotate(45deg);
+}
+/* caret on the edge facing the trigger */
+.cds--tooltip__content[data-placement^="top"]::after    { inset-block-end: -0.1875rem; inset-inline-start: 50%; margin-inline-start: -0.25rem; }
+.cds--tooltip__content[data-placement^="bottom"]::after  { inset-block-start: -0.1875rem; inset-inline-start: 50%; margin-inline-start: -0.25rem; }
+.cds--tooltip__content[data-placement^="left"]::after    { inset-inline-end: -0.1875rem; inset-block-start: 50%; margin-block-start: -0.25rem; }
+.cds--tooltip__content[data-placement^="right"]::after   { inset-inline-start: -0.1875rem; inset-block-start: 50%; margin-block-start: -0.25rem; }
+/* start/end variants nudge the caret toward that edge instead of the centre */
+.cds--tooltip__content[data-placement$="-start"]::after  { inset-inline-start: 0.75rem; margin-inline-start: 0; }
+.cds--tooltip__content[data-placement$="-end"]::after    { inset-inline-start: auto; inset-inline-end: 0.75rem; margin-inline-start: 0; }
+
+/* Editor-only placement preview. The front-end is positioned by floating-ui
+ * (position:fixed + inline top/left), so these absolute offsets only take effect
+ * in the editor canvas, where there is no view.js. They let an author SEE the
+ * chosen alignment (the content is revealed while the block is selected — see
+ * edit.js). Scoped to `.editor-styles-wrapper` so they never fight floating-ui
+ * on the published page. */
+.editor-styles-wrapper .cds--tooltip__content[data-placement] {
+	position: absolute;
+}
+.editor-styles-wrapper .cds--tooltip__content[data-placement^="top"]    { inset-block-end: calc(100% + 0.5rem); inset-inline-start: 50%; transform: translateX(-50%); }
+.editor-styles-wrapper .cds--tooltip__content[data-placement^="bottom"] { inset-block-start: calc(100% + 0.5rem); inset-inline-start: 50%; transform: translateX(-50%); }
+.editor-styles-wrapper .cds--tooltip__content[data-placement="top-start"],
+.editor-styles-wrapper .cds--tooltip__content[data-placement="bottom-start"] { inset-inline-start: 0; transform: none; }
+.editor-styles-wrapper .cds--tooltip__content[data-placement="top-end"],
+.editor-styles-wrapper .cds--tooltip__content[data-placement="bottom-end"]   { inset-inline-start: auto; inset-inline-end: 0; transform: none; }
+.editor-styles-wrapper .cds--tooltip__content[data-placement="left"]    { inset-inline-end: calc(100% + 0.5rem); inset-block-start: 50%; transform: translateY(-50%); }
+.editor-styles-wrapper .cds--tooltip__content[data-placement="right"]   { inset-inline-start: calc(100% + 0.5rem); inset-block-start: 50%; transform: translateY(-50%); }
+
+/* --------------------------------------------------------------------------
+   Toggletip — Carbon's click-not-hover tooltip. Inline trigger (info button)
+   + a popover that view.js anchors with floating-ui. CSS handles appearance
+   and the hidden/visible state; positioning is set inline by JS.
+   -------------------------------------------------------------------------- */
+
+.cds--toggletip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.cds--toggletip-label {
+	font-size: var(--cds-label-01-font-size, 0.75rem);
+	color: var(--cds-text-secondary, #525252);
+}
+
+.cds--toggletip-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-block-size: 1.5rem;
+	min-inline-size: 1.5rem;
+	padding: 0.25rem;
+	background: transparent;
+	border: 0;
+	color: var(--cds-icon-secondary, #525252);
+	cursor: pointer;
+	border-radius: 2px;
+}
+
+.cds--toggletip-button:hover {
+	color: var(--cds-icon-primary, #161616);
+}
+
+/* Carbon's `.cds--toggletip-button:focus` is `outline: 2px dotted` with
+ * inset offset, matching the tooltip + menu-item focus pattern. */
+.cds--toggletip-button:focus,
+.cds--toggletip-button:focus-visible {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+.cds--toggletip-content {
+	padding: 1rem 1rem 1.5rem;
+	max-inline-size: 20rem;
+	min-inline-size: 12rem;
+	background: var(--cds-background-inverse, #393939);
+	color: var(--cds-text-inverse, #ffffff);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+	border-radius: 2px;
+	font-size: var(--cds-body-01-font-size, 0.875rem);
+	line-height: 1.4;
+	z-index: 9000;
+}
+
+.cds--toggletip-content[hidden] {
+	display: none;
+}
+
+/* Tooltip trigger — keeps the help-cursor visual cue when hovered. Carbon
+ * draws the focus indicator as 2px dotted outline inset 2px so it lands
+ * inside the trigger element (matching the menu-item + toggletip focus
+ * style). Without this, the default browser outline shows. */
+.cds--tooltip__trigger {
+	cursor: help;
+}
+
+.cds--tooltip__trigger:focus,
+.cds--tooltip__trigger:focus-visible {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+/* High-contrast OS preference: Carbon switches the focus indicator to dotted
+ * to remain visible under prefers-contrast color overrides. Mirrors Carbon's
+ * own @media wrapping (`outline-style: dotted` only fires under this MQ). */
+@media (prefers-contrast: more) {
+	.cds--menu-button .cds--menu-item:focus-within,
+	.cds--tooltip__trigger:focus,
+	.cds--tooltip__trigger:focus-visible,
+	.cds--toggletip-button:focus,
+	.cds--toggletip-button:focus-visible {
+		outline-style: dotted;
+	}
+}
+
+/* --------------------------------------------------------------------------
+   Stage 0 baseline vertical rhythm — minimal spacing between top-level blocks
+   in the main content area. Stage 1 layout templates will own real spacing;
+   this is just so the dogfood site is usable today.
+   -------------------------------------------------------------------------- */
+
+.cds--content > .wp-block-awt-button,
+.cds--content > .wp-block-awt-link,
+.cds--content > .wp-block-awt-list,
+.cds--content > .wp-block-awt-breadcrumb,
+.cds--content > .wp-block-awt-checkbox,
+.cds--content > .wp-block-awt-radio-button-group,
+.cds--content > .wp-block-awt-text-input,
+.cds--content > .wp-block-awt-toggle,
+.cds--content > .wp-block-awt-form,
+.cds--content > .wp-block-awt-menu-button,
+.cds--content > .wp-block-awt-tooltip,
+.cds--content > h1,
+.cds--content > h2,
+.cds--content > h3,
+.cds--content > p {
+	margin-block-end: 1rem;
+}
+
+.cds--content > h2 {
+	margin-block-start: 2rem;
+}
+
+.cds--content > h1 {
+	margin-block-start: 1rem;
+}
+
+/* Form inputs inside forms keep tight vertical rhythm. */
+.cds--form > .wp-block-awt-text-input,
+.cds--form > .wp-block-awt-text-area,
+.cds--form > .wp-block-awt-checkbox,
+.cds--form > .wp-block-awt-radio-button-group,
+.cds--form > .wp-block-awt-toggle,
+.cds--form > .wp-block-awt-button {
+	margin-block-end: 1rem;
+}
+
+.cds--form > .wp-block-awt-button {
+	margin-block-start: 1rem;
+}
+
+/* Editor only — the block editor wraps a form's inner blocks in an extra
+   block-list layout div, so the `.cds--form > .wp-block-awt-*` direct-child
+   rhythm above never reaches them (the submit button ends up flush). Re-apply
+   the same spacing through that wrapper. Front-end has no wrapper. */
+.editor-styles-wrapper .cds--form > .block-editor-block-list__layout > .wp-block-awt-text-input,
+.editor-styles-wrapper .cds--form > .block-editor-block-list__layout > .wp-block-awt-text-area,
+.editor-styles-wrapper .cds--form > .block-editor-block-list__layout > .wp-block-awt-checkbox,
+.editor-styles-wrapper .cds--form > .block-editor-block-list__layout > .wp-block-awt-radio-button-group,
+.editor-styles-wrapper .cds--form > .block-editor-block-list__layout > .wp-block-awt-toggle,
+.editor-styles-wrapper .cds--form > .block-editor-block-list__layout > .wp-block-awt-button {
+	margin-block-end: 1rem;
+}
+.editor-styles-wrapper .cds--form > .block-editor-block-list__layout > .wp-block-awt-button {
+	margin-block-start: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   Inline buttons in the dogfood demo sit on the same row.
+   -------------------------------------------------------------------------- */
+
+.cds--content > .wp-block-awt-button {
+	margin-inline-end: 0.5rem;
+}
+
+.cds--content > .wp-block-awt-link {
+	display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Hero — marketing-page primitive. Two layouts: text-only (single column) and
+   text-with-image-right (2-col on md+, stacks on sm).
+   -------------------------------------------------------------------------- */
+
+.awt-hero {
+	display: grid;
+	/* minmax(0, 1fr), NOT 1fr: a bare `1fr` track is `minmax(auto, 1fr)`, and
+	   its `auto` floor refuses to shrink below the widest child's min-content
+	   (a long heading word, or the image's intrinsic width). On a narrow
+	   viewport that blows the grid — and the whole page — wider than the
+	   screen. minmax(0, …) lets the track shrink to its container so content
+	   wraps instead of overflowing. */
+	grid-template-columns: minmax(0, 1fr);
+	gap: 2rem;
+	/* No padding of its own — vertical rhythm comes from the awt/section
+	   wrapper (the hero pattern sets paddingBlock 10 = 4rem). Hard-coding it
+	   here too double-padded the pattern to 128px and authors couldn't
+	   remove it. */
+	align-items: center;
+}
+
+@media (min-width: 672px) {
+	.awt-hero--text-with-image-right {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	}
+	/* Image column width — text is column 1, image is column 2. The modifier
+	   only changes the split; below 672px both columns collapse to one and the
+	   image stacks under the text regardless. */
+	.awt-hero--text-with-image-right.awt-hero--img-narrow {
+		grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+	}
+	.awt-hero--text-with-image-right.awt-hero--img-wide {
+		grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+	}
+}
+
+.awt-hero__eyebrow {
+	margin: 0 0 1rem;
+	font-size: var(--cds-label-01-font-size, 0.75rem);
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--cds-text-secondary, #525252);
+}
+
+.awt-hero__heading {
+	margin: 0;
+	font-size: var(--cds-display-02-font-size, 3.375rem);
+	font-weight: 300;
+	/* Carbon $display-02 line-height at this (lg, 3.375rem) size is 1.19;
+	   the tighter 1.16/1.13 steps only apply at the xlg/max fluid sizes. */
+	line-height: 1.19;
+	/* Long-word handling for narrow viewports (WCAG 1.4.10 reflow to 320px):
+	   hyphens break a too-long word legibly (organiza-tions) at the page's
+	   `lang`; overflow-wrap is the last-resort fallback for unhyphenatable
+	   tokens (URLs). Paired with minmax(0,…) above so the track can shrink. */
+	hyphens: auto;
+	overflow-wrap: break-word;
+}
+
+/* Carbon's display-02 is a FLUID token — 3.375rem (54px) only at lg (≥1056px)
+   and up; below that it's 2.625rem (42px). We render the lg size by default,
+   so restore the smaller mobile size on phones. Without this, a single long
+   heading word at 54px is wider than a phone screen and overflows even after
+   the grid track shrinks. Uses the hero's own 672px breakpoint for simplicity. */
+@media (max-width: 671.98px) {
+	.awt-hero__heading {
+		font-size: 2.625rem;
+	}
+}
+
+.awt-hero__description {
+	margin: 1rem 0 0;
+	max-inline-size: 40rem;
+	font-size: var(--cds-body-02-font-size, 1rem);
+	line-height: 1.5;
+	color: var(--cds-text-secondary, #525252);
+}
+
+.awt-hero__cta {
+	display: flex;
+	gap: 0.5rem;
+	margin-block-start: 1.5rem;
+	flex-wrap: wrap;
+}
+
+/* v2 hero body — the text column is a real block container (paragraphs,
+   heading, lists, inline-set CTA row as inner blocks). Stack children with a
+   consistent rhythm; the CTA row gets the same offset the legacy .awt-hero__cta
+   had. The class-specific rules above (eyebrow/heading/description margins)
+   still apply because migrated/template children carry the same classes. */
+.awt-hero__text > * + * {
+	margin-block-start: 1rem;
+}
+
+.awt-hero__text > .awt-inline-set {
+	margin-block-start: 1.5rem;
+}
+
+/* Hero body copy is styled by POSITION, not only by class, so a paragraph or
+   list an author adds inside the hero looks identical to the pattern's
+   description (which carries .awt-hero__description). Two parts:
+   - readable measure (40rem) for all body copy except the eyebrow;
+   - secondary text color, yielding to an author-picked color (.has-text-color
+     covers both palette classes and custom inline colors). */
+.awt-hero__text > p:not(.awt-hero__eyebrow),
+.awt-hero__text > ul,
+.awt-hero__text > ol {
+	max-inline-size: 40rem;
+}
+
+.awt-hero__text > p:not(.awt-hero__eyebrow):not(.has-text-color),
+.awt-hero__text > ul:not(.has-text-color),
+.awt-hero__text > ol:not(.has-text-color) {
+	color: var(--cds-text-secondary, #525252);
+}
+
+.awt-hero__image {
+	inline-size: 100%;
+	block-size: auto;
+	border-radius: 4px;
+}
+
+/* Fixed-shape crops. object-fit: cover fills the box and centre-crops the
+   overflow, so mismatched uploads still balance against the text column.
+   Without a ratio modifier the image keeps its own proportions (block-size:
+   auto above). */
+.awt-hero__image--ratio-1x1,
+.awt-hero__image--ratio-4x3,
+.awt-hero__image--ratio-3x2,
+.awt-hero__image--ratio-16x9,
+.awt-hero__image--ratio-3x4,
+.awt-hero__image--ratio-4x5 {
+	block-size: auto;
+	object-fit: cover;
+}
+
+.awt-hero__image--ratio-1x1  { aspect-ratio: 1 / 1; }
+.awt-hero__image--ratio-4x3  { aspect-ratio: 4 / 3; }
+.awt-hero__image--ratio-3x2  { aspect-ratio: 3 / 2; }
+.awt-hero__image--ratio-16x9 { aspect-ratio: 16 / 9; }
+.awt-hero__image--ratio-3x4  { aspect-ratio: 3 / 4; }
+.awt-hero__image--ratio-4x5  { aspect-ratio: 4 / 5; }
+
+/* --------------------------------------------------------------------------
+   Feature grid — responsive grid of tiles. Stacks on sm, grids on md+.
+   -------------------------------------------------------------------------- */
+
+.awt-feature-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+}
+
+@media (min-width: 672px) {
+	.awt-feature-grid--cols-2 { grid-template-columns: repeat(2, 1fr); }
+	.awt-feature-grid--cols-3 { grid-template-columns: repeat(3, 1fr); }
+	.awt-feature-grid--cols-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Inner-content spacing inside feature-grid tiles.
+ *
+ * The standard feature-tile content layout — icon, heading, paragraph —
+ * stacks with zero vertical gap by default. WordPress's
+ * `--wp--style--block-gap` rule (`:where(.is-layout-flow) > * + *`) doesn't
+ * fire inside an `awt/tile` because render.php emits the tile content
+ * without a layout marker class. Add explicit adjacent-sibling spacing on
+ * the tile so the icon → heading → paragraph rhythm breathes.
+ *
+ * Carbon's typography rhythm puts roughly 1rem between an icon and the
+ * heading it labels, and 0.5rem between the heading and its body copy.
+ * Mirror that here. */
+.awt-feature-grid .cds--tile > * + * {
+	margin-block-start: 0.75rem;
+}
+.awt-feature-grid .cds--tile h2 + *,
+.awt-feature-grid .cds--tile h3 + *,
+.awt-feature-grid .cds--tile h4 + * {
+	/* heading → body: tighter than icon → heading */
+	margin-block-start: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Statistic — modelled on Carbon's c4d-cta-block-item statistic styling
+   (used on ibm.com case studies). The big number is a <span>, the heading
+   below it is the real semantic heading (default <h4>). Multiple stats sit
+   in a row when composed inside a parent grid (the Stats / metrics bar
+   section pattern uses CSS grid on the parent).
+
+   Live IBM dimensions (blue-pearl-bob case study, 2026-05):
+     value:   76px / weight 600 / line-height 85.88px / #161616
+     heading: 16px / weight 600 / line-height 24px
+   -------------------------------------------------------------------------- */
+
+.awt-stat {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.awt-stat--align-center {
+	align-items: center;
+	text-align: center;
+}
+
+.awt-stat__value {
+	display: block;
+	/* Clamp the font-size so stats degrade gracefully in narrow columns.
+	   Base IBM target = 4.75rem (76px); shrink down to 2.75rem (44px) at the
+	   smallest viewport so "1000+" doesn't break in 200px-wide columns. */
+	font-size: clamp(2.75rem, 1.5rem + 4vw, 4.75rem);
+	font-weight: 600;
+	line-height: 1.13;       /* ~85.88px on 76px */
+	color: var(--cds-text-primary, #161616);
+	letter-spacing: -0.01em;
+	margin-block-end: 0.5rem;
+	/* Keep tokens like "~90%" or "1000+" together; allow horizontal overflow
+	   rather than breaking mid-token. */
+	word-break: keep-all;
+	overflow-wrap: normal;
+}
+
+.awt-stat__heading {
+	font-size: var(--cds-heading-01-font-size, 1rem);            /* 16px */
+	font-weight: 600;
+	line-height: var(--cds-heading-01-line-height, 1.5);          /* 24px */
+	color: var(--cds-text-primary, #161616);
+	margin: 0;
+}
+
+.awt-stat__description {
+	font-size: var(--cds-body-01-font-size, 0.875rem);            /* 14px */
+	line-height: var(--cds-body-01-line-height, 1.42857);         /* 20px */
+	color: var(--cds-text-secondary, #525252);
+	margin: 0;
+	max-inline-size: 24rem;
+}
+
+.awt-stat--align-center .awt-stat__description {
+	margin-inline: auto;
+}
+
+/* When statistics are placed side-by-side inside a flex/grid parent
+   (e.g., the Stats / metrics bar section pattern), the parent provides
+   the row layout. The block itself stays column-flex. */
+
+/* --------------------------------------------------------------------------
+   Testimonial — modelled on Carbon's c4d-quote treatment (e.g. ibm.com
+   case studies). Quote body in IBM Plex Serif (weight 300, NOT italic),
+   source attribution in Plex Sans for two-typeface contrast. Marks are
+   inline SVGs at the open of the quote.
+
+   Live IBM dimensions (desnz case study, 2026-05):
+     quote body: 36px / weight 300 / line-height 44px / Plex Serif / #161616
+     source name: 16px / weight 600 / Plex Sans
+     source role / org: 16px / weight 400 / Plex Sans
+   -------------------------------------------------------------------------- */
+
+.awt-testimonial {
+	margin: 0;
+	padding: 0;
+	position: relative;
+	color: var(--cds-text-primary, #161616);
+}
+
+.awt-testimonial--card {
+	padding: var(--cds-spacing-07, 2rem);
+	background: var(--cds-layer-01, #f4f4f4);
+}
+
+.awt-testimonial--align-center {
+	text-align: center;
+}
+
+.awt-testimonial__mark {
+	display: inline-block;
+	color: var(--cds-text-primary, #161616);
+	margin-block-end: 1rem;
+}
+
+.awt-testimonial--md .awt-testimonial__mark { inline-size: 1.5rem; block-size: 1.2rem; }
+.awt-testimonial--lg .awt-testimonial__mark { inline-size: 2rem;   block-size: 1.6rem; }
+.awt-testimonial--xl .awt-testimonial__mark { inline-size: 2.5rem; block-size: 2rem; }
+
+.awt-testimonial--mark-none .awt-testimonial__mark { display: none; }
+
+.awt-testimonial__quote {
+	font-family: 'IBM Plex Serif', Georgia, 'Times New Roman', serif;
+	font-weight: 300;          /* IBM uses light for body */
+	font-style: normal;        /* explicitly NOT italic */
+	color: var(--cds-text-primary, #161616);
+	margin: 0;
+	max-inline-size: 48rem;    /* readable line length cap */
+}
+
+.awt-testimonial--md .awt-testimonial__quote {
+	font-size: 1.5rem;         /* 24px */
+	line-height: 1.25;         /* 30px */
+}
+
+.awt-testimonial--lg .awt-testimonial__quote {
+	font-size: 2.25rem;        /* 36px — IBM default */
+	line-height: 1.222;        /* 44px */
+}
+
+.awt-testimonial--xl .awt-testimonial__quote {
+	font-size: 3rem;           /* 48px */
+	line-height: 1.167;        /* 56px */
+}
+
+.awt-testimonial--align-center .awt-testimonial__quote {
+	margin-inline: auto;
+}
+
+.awt-testimonial__source {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-block-start: 1.5rem;
+	/* Source attribution returns to Plex Sans — the two-typeface contrast
+	   is the typographic move. */
+	font-family: 'IBM Plex Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.awt-testimonial--align-center .awt-testimonial__source {
+	justify-content: center;
+}
+
+.awt-testimonial__avatar {
+	inline-size: 3rem;
+	block-size: 3rem;
+	border-radius: 50%;
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+.awt-testimonial__source-details {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.awt-testimonial__source-name {
+	font-size: var(--cds-heading-01-font-size, 1rem);  /* 16px */
+	font-weight: 600;
+	line-height: var(--cds-heading-01-line-height, 1.5);
+	color: var(--cds-text-primary, #161616);
+}
+
+.awt-testimonial__source-role,
+.awt-testimonial__source-org {
+	font-size: var(--cds-body-02-font-size, 1rem);    /* 16px */
+	font-weight: 400;
+	line-height: var(--cds-body-02-line-height, 1.5);
+	color: var(--cds-text-primary, #161616);
+}
+
+/* Inline attribution: join name / role / org with bullet separators on one line. */
+.awt-testimonial--attr-inline .awt-testimonial__source-details {
+	flex-direction: row;
+	gap: 0;
+	flex-wrap: wrap;
+}
+
+.awt-testimonial--attr-inline .awt-testimonial__source-role::before,
+.awt-testimonial--attr-inline .awt-testimonial__source-org::before {
+	content: " · ";
+	margin-inline: 0.5rem;
+	color: var(--cds-text-secondary, #525252);
+}
+
+/* --------------------------------------------------------------------------
+   Pricing tile — modelled on Carbon's bx--tile--selectable pattern
+   (ibm.com/products/.../pricing). NO embedded feature list — feature
+   comparison lives in a separate awt/data-table below (with boolean cells).
+   The SaaS-style card-with-features variant is awt/pricing-card (Premium).
+   -------------------------------------------------------------------------- */
+
+.awt-pricing-tile {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: var(--cds-spacing-07, 2rem);
+	background: var(--cds-layer-01, #f4f4f4);
+	color: var(--cds-text-primary, #161616);
+	block-size: 100%;
+	box-sizing: border-box;
+	border: 1px solid transparent;
+}
+
+.awt-pricing-tile--selectable {
+	cursor: pointer;
+}
+
+.awt-pricing-tile--featured {
+	background: var(--cds-layer-02, #ffffff);
+	border-color: var(--cds-border-strong-01, #8d8d8d);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.awt-pricing-tile__badge {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-start: var(--cds-spacing-05, 1rem);
+	transform: translateY(-50%);
+	display: inline-block;
+	padding-block: 0.25rem;
+	padding-inline: 0.75rem;
+	background: var(--cds-button-primary, #0f62fe);
+	color: var(--cds-text-on-color, #ffffff);
+	font-size: var(--cds-label-01-font-size, 0.75rem);
+	font-weight: 600;
+	letter-spacing: 0.32px;
+	border-radius: 0.125rem;
+	text-transform: uppercase;
+}
+
+.awt-pricing-tile__tier-name {
+	font-size: var(--cds-heading-03-font-size, 1.25rem);
+	font-weight: 400;
+	line-height: 1.4;
+	margin: 0;
+	margin-block-end: var(--cds-spacing-05, 1rem);
+	color: var(--cds-text-primary, #161616);
+}
+
+.awt-pricing-tile__price-row {
+	display: flex;
+	align-items: baseline;
+	gap: 0.25rem;
+	margin-block-end: var(--cds-spacing-05, 1rem);
+}
+
+.awt-pricing-tile__price {
+	font-size: 2.625rem;       /* 42px — productive-heading-06 */
+	font-weight: 300;
+	line-height: 1.2;
+	color: var(--cds-text-primary, #161616);
+	word-break: keep-all;
+}
+
+.awt-pricing-tile__price-period {
+	font-size: var(--cds-body-02-font-size, 1rem);
+	color: var(--cds-text-secondary, #525252);
+	font-weight: 400;
+	white-space: nowrap;
+}
+
+.awt-pricing-tile__price-row {
+	flex-wrap: wrap;       /* allow period to drop to next line on tight columns */
+}
+
+.awt-pricing-tile__description {
+	font-size: var(--cds-body-01-font-size, 0.875rem);
+	line-height: var(--cds-body-01-line-height, 1.42857);
+	color: var(--cds-text-secondary, #525252);
+	margin: 0;
+	margin-block-end: var(--cds-spacing-07, 2rem);
+	flex: 1 1 auto;            /* push CTA to bottom on equal-height tiles */
+}
+
+/* Carbon's cds--btn--lg ships an asymmetric right-padding of 63px to reserve
+   space for an optional trailing icon. We don't render an icon on pricing-tile
+   CTAs, so that empty 48px of icon-slot makes the label look off-center and
+   widens the button unnecessarily. Reset to symmetric padding scoped to the
+   pricing-tile so other awt/button uses aren't affected.
+
+   Also: pricing-tile CTAs stretch to the full inline width of the tile, so
+   buttons line up vertically across columns regardless of label length. This
+   matches the SaaS-card convention even though IBM's selector tile uses a
+   different layout — the awt/pricing-tile blends both. */
+.awt-pricing-tile__cta {
+	align-self: stretch;
+	justify-content: center;
+	text-align: center;
+	padding-inline: var(--cds-spacing-05, 1rem);
+}
+
+.awt-pricing-tile__cta > span {
+	display: inline-block;
+	text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Data table — boolean cells. Used by the Pricing-table section pattern's
+   feature-comparison matrix below a row of awt/pricing-tile blocks.
+   Per-column `cellType: "boolean"` renders a checkmark when truthy and a
+   dash when falsy, with screen-reader text "Included" / "Not included."
+   -------------------------------------------------------------------------- */
+
+.awt-data-table__cell--boolean {
+	text-align: center;
+}
+
+.awt-data-table__check {
+	display: inline-block;
+	vertical-align: middle;
+	color: var(--cds-support-success, #198038);
+}
+
+.awt-data-table__not-included {
+	color: var(--cds-text-secondary, #525252);
+	font-size: var(--cds-body-02-font-size, 1rem);
+}
+
+/* --------------------------------------------------------------------------
+   Carbon button — :visited / :hover / :active overrides for <a> renderings.
+
+   Carbon's React button reference is a <button>, so Carbon CSS doesn't ship
+   :visited rules and its :hover / :active rules implicitly assume the
+   element doesn't already carry a visited link color. When AWT renders a
+   button as <a href="..."> (e.g. awt/pricing-tile CTA, awt/button with
+   href), the browser's default :visited link styling (purple text)
+   overrides Carbon's color rules and breaks both rest AND hover states.
+
+   The fix below pins the text color for every relevant state combination
+   (rest, :visited, :hover, :active, :visited:hover, :visited:active) so the
+   visited modifier never wins over Carbon's intent.
+
+   Specificity is 0,2,1 / 0,2,2 (element + class + pseudo) — higher than
+   Carbon's 0,1,1 / 0,1,2 — so these rules cascade above Carbon's defaults
+   when both apply. Carbon's background-color changes on hover/active are
+   NOT blocked by :visited (browsers only restrict `color` and a few text
+   properties on :visited), so we don't need to override backgrounds here.
+   -------------------------------------------------------------------------- */
+
+/* Primary / Secondary / Danger — text stays white across all states. */
+a.cds--btn--primary,
+a.cds--btn--primary:visited,
+a.cds--btn--primary:hover,
+a.cds--btn--primary:visited:hover,
+a.cds--btn--primary:active,
+a.cds--btn--primary:visited:active,
+a.cds--btn--secondary,
+a.cds--btn--secondary:visited,
+a.cds--btn--secondary:hover,
+a.cds--btn--secondary:visited:hover,
+a.cds--btn--secondary:active,
+a.cds--btn--secondary:visited:active,
+a.cds--btn--danger,
+a.cds--btn--danger:visited,
+a.cds--btn--danger:hover,
+a.cds--btn--danger:visited:hover,
+a.cds--btn--danger:active,
+a.cds--btn--danger:visited:active {
+	color: var(--cds-text-on-color, #ffffff);
+}
+
+/* Tertiary — blue text at rest + visited, white text on hover/active to match
+   Carbon's inverse-on-fill convention. */
+a.cds--btn--tertiary,
+a.cds--btn--tertiary:visited {
+	color: var(--cds-button-tertiary, #0f62fe);
+}
+
+a.cds--btn--tertiary:hover,
+a.cds--btn--tertiary:visited:hover,
+a.cds--btn--tertiary:active,
+a.cds--btn--tertiary:visited:active,
+a.cds--btn--tertiary:focus,
+a.cds--btn--tertiary:visited:focus {
+	color: var(--cds-text-inverse, #ffffff);
+}
+
+/* Ghost — blue text across all states (Carbon's ghost hover only changes bg). */
+a.cds--btn--ghost,
+a.cds--btn--ghost:visited,
+a.cds--btn--ghost:hover,
+a.cds--btn--ghost:visited:hover,
+a.cds--btn--ghost:active,
+a.cds--btn--ghost:visited:active {
+	color: var(--cds-link-primary, #0f62fe);
+}
+
+/* --------------------------------------------------------------------------
+   FAQ item — wraps the accordion-item disclosure pattern in a real semantic
+   heading. The wrapper class .awt-faq-item is applied in addition to
+   .cds--accordion__item so existing Carbon accordion CSS carries through.
+   The heading-tag wrapper around the trigger button is what differentiates
+   the markup from a plain accordion-item — screen readers navigate by
+   heading, and schema.org FAQPage rich-result eligibility expects the
+   question to be in a heading.
+   -------------------------------------------------------------------------- */
+
+.awt-faq-item {
+	list-style: none;
+	/* Carbon's `.cds--accordion__heading` reads
+	 * `--cds-layout-density-padding-inline-local` for its right gutter (the
+	 * 16px space the chevron sits in). That var is set by the `.cds--accordion`
+	 * parent rule — but `awt/faq-item` is usable at the top level (no parent
+	 * accordion required), so we set the same density-layer values here. The
+	 * clamp expression mirrors Carbon's `.cds--accordion` rule verbatim so it
+	 * responds to global density overrides the same way. */
+	--cds-layout-size-height-local: clamp(
+		max(var(--cds-layout-size-height-min), var(--cds-layout-size-height-sm)),
+		var(--cds-layout-size-height, var(--cds-layout-size-height-md)),
+		min(var(--cds-layout-size-height-max), var(--cds-layout-size-height-lg))
+	);
+	--cds-layout-density-padding-inline-local: clamp(
+		var(--cds-layout-density-padding-inline-min),
+		var(--cds-layout-density-padding-inline, var(--cds-layout-density-padding-inline-normal)),
+		var(--cds-layout-density-padding-inline-max)
+	);
+}
+
+.awt-faq-item__question-heading {
+	/* Strip default heading vertical margin and font sizing so the heading
+	   visually behaves like a row, not a paragraph break. The actual font-size
+	   is controlled by the .cds--accordion__title span inside the button. */
+	margin: 0;
+	font-size: inherit;
+	font-weight: inherit;
+	line-height: inherit;
+}
+
+.awt-faq-item__trigger {
+	/* The trigger inherits Carbon's .cds--accordion__heading styling for the
+	   row layout. We override only the things that change when the trigger is
+	   inside a heading wrapper rather than a bare <li>. */
+	font: inherit;
+	color: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   Icon — outer `<span class="awt-icon">` wrapper. Front-end render.php and
+   editor edit.js both emit this class. Default display is inline-block so
+   the span accepts explicit width/height while still flowing horizontally
+   alongside adjacent icons or text.
+
+   The `awt-icon--inline` modifier adds vertical-align: middle when the icon
+   sits inside running text (the spec exposes this as a per-block attribute).
+
+   Inter-icon margin matches the inter-tag spacing — adjacent siblings get
+   half-rem of breathing room.
+   -------------------------------------------------------------------------- */
+
+.awt-icon {
+	display: inline-block;
+	vertical-align: top;
+	color: currentColor;
+}
+
+.awt-icon--inline {
+	vertical-align: middle;
+}
+
+.awt-icon + .awt-icon,
+.wp-block-awt-icon + .wp-block-awt-icon {
+	margin-inline-start: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Tile — Carbon's class names don't ship default padding/background; provide
+   minimal defaults so the dogfood page is presentable today.
+   -------------------------------------------------------------------------- */
+
+.cds--tile {
+	display: block;
+	padding: 1rem;
+	background: var(--cds-layer-01, #f4f4f4);
+	color: inherit;
+	border: 1px solid transparent;
+}
+
+.cds--tile--clickable {
+	text-decoration: none;
+}
+
+.cds--tile--clickable:hover {
+	background: var(--cds-layer-hover-01, #e8e8e8);
+}
+
+.cds--tile--clickable:focus-visible,
+.cds--tile--selectable:focus-visible,
+.cds--tile--expandable:focus-visible {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+/* Selectable tile (single or radio-grouped). Click changes the
+ * `aria-checked` state + the `cds--tile--is-selected` class (view.js).
+ * Selected state gets an accent left-border + interactive border color, the
+ * standard IBM radio-tile visual. Cursor: pointer to signal interactivity. */
+.cds--tile--selectable {
+	cursor: pointer;
+	transition: background 70ms cubic-bezier(.2, 0, .38, .9), border-color 70ms cubic-bezier(.2, 0, .38, .9);
+}
+.cds--tile--selectable:hover {
+	background: var(--cds-layer-hover-01, #e8e8e8);
+}
+.cds--tile--selectable.cds--tile--is-selected {
+	border-color: var(--cds-border-interactive, #0f62fe);
+	box-shadow: inset 3px 0 0 0 var(--cds-border-interactive, #0f62fe);
+}
+
+/* Expandable tile (native <details>). Replaces the browser's default
+ * disclosure triangle with a Carbon chevron on the right; rotates 180deg
+ * when the <details> is `open`. Animating max-height isn't possible on
+ * <details> directly (display: none flips abruptly), but the chevron
+ * transition is fine to animate. */
+.cds--tile--expandable {
+	cursor: pointer;
+	/* Move the tile's 1rem padding off the <details> and onto the summary +
+	 * content (below). When collapsed, only the summary renders, so giving the
+	 * summary the full padding makes the ENTIRE collapsed tile — including the
+	 * area that used to be dead padding — the clickable toggle target, matching
+	 * Carbon (click anywhere on a collapsed tile to expand). */
+	padding: 0;
+}
+.cds--tile--expandable > .cds--tile__summary {
+	/* Keep the <summary> at its default `display: list-item`. WebKit/Safari only
+	 * fires the native click-to-toggle when the summary keeps that display —
+	 * setting `display: flex` here silently breaks toggling in Safari ("doesn't
+	 * always open"). The flex layout lives on the inner `__summary-row` instead. */
+	list-style: none;          /* hide native marker (Firefox + spec) */
+	cursor: pointer;
+	user-select: none;         /* clicking the label always toggles, never selects text */
+	-webkit-user-select: none;
+	padding: 1rem;             /* fills the tile so clicking anywhere on it toggles */
+}
+.cds--tile--expandable > .cds--tile__summary::-webkit-details-marker {
+	display: none;             /* hide native marker (Safari) */
+}
+/* Inner row carries the flex layout the summary used to. */
+.cds--tile__summary-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+}
+.cds--tile__summary-text {
+	font-weight: 600;
+}
+.cds--tile__chevron {
+	/* Carbon's compiled `.cds--tile__chevron` rule is `position: absolute;
+	 * inset-block-end: 0; inset-inline-end: 0` — that pins the chevron to
+	 * the bottom-right corner of the tile (Carbon's full expandable-tile
+	 * pattern keeps the header at the top with the chevron in the corner).
+	 *
+	 * Our `<details>`-based variant collapses everything into a single
+	 * summary row, so the chevron should sit INLINE with the title — same
+	 * baseline, right-justified by the summary's `space-between` flex.
+	 * Override to static positioning so the chevron joins the flex flow. */
+	position: static;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	inline-size: 1rem;
+	block-size: 1rem;
+	transition: transform 110ms cubic-bezier(.2, 0, .38, .9);
+}
+/* Descendant selector (not direct-child): the chevron now lives inside
+ * `.cds--tile__summary-row`, so the old `summary > chevron` selector no longer
+ * matched and rotation broke. */
+.cds--tile--expandable[open] .cds--tile__chevron {
+	transform: rotate(180deg);
+}
+.cds--tile__content {
+	margin-block-start: 0.75rem;
+}
+/* Expandable content keeps the inset padding that moved off the <details>. */
+.cds--tile--expandable > .cds--tile__content {
+	padding: 0 1rem 1rem;
+	margin-block-start: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Tag — Carbon ships layout; we just ensure inline-flex + sensible padding so
+   the default render looks like a chip.
+   -------------------------------------------------------------------------- */
+
+/* Carbon tag base — vertical centering comes from inline-flex + align-items,
+ * NOT from padding-block. A padding-block here squeezes the text vertically
+ * and clips descenders ("g", "p", "y") on small font-sizes. Use min-block-size
+ * to set the row height; let align-items center the content within it. */
+.cds--tag {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding-block: 0;
+	padding-inline: 0.5rem;
+	min-block-size: 1.5rem;
+	border-radius: 999px;
+	background: var(--cds-tag-background-gray, #e0e0e0);
+	color: var(--cds-tag-color-gray, #161616);
+	font-size: var(--cds-label-01-font-size, 0.75rem);
+	line-height: 1.3;
+}
+
+/* Linked tag (awt/tag with a URL) — rendered as <a>. Keep the tag's own
+   surface/text colors and drop the global link underline; show a pointer and
+   a subtle hover so it reads as interactive (Carbon "clickable tag"). */
+.cds--tag.awt-tag--link {
+	color: inherit;
+	text-decoration: none;
+	cursor: pointer;
+}
+.cds--tag.awt-tag--link:hover {
+	text-decoration: underline;
+}
+
+/* Inline gap between adjacent tags. Two paths:
+   1. Tags rendered as siblings in a row at the post-content level — the
+      block-editor wraps each in `.wp-block-awt-tag` (or in the editor,
+      `.block-editor-block-list__block[data-type="awt/tag"]`) and lays them
+      out as flow-content. Adjacent siblings need a left margin.
+   2. Tags placed in a flex parent that already supplies `gap` — that
+      parent's gap wins and our adjacent-sibling rule is harmless.
+*/
+/* Tag adjacent-sibling — editor-only, same rationale as the
+ * `.wp-block-awt-button + .wp-block-awt-button` block further down: on the
+ * published page, natural inline whitespace between sibling tags already
+ * provides ~4px of gap; in the editor canvas Gutenberg strips that space, so
+ * the margin only applies inside `body.editor-styles-wrapper`. */
+body.editor-styles-wrapper .cds--tag + .cds--tag,
+body.editor-styles-wrapper .wp-block-awt-tag + .wp-block-awt-tag {
+	margin-inline-start: 0.5rem;
+}
+
+/* awt/inline-set — Carbon-style inline container.
+ *
+ * Replaces "raw cds--btn siblings" with a flex parent that owns the gap. Use
+ * this around any horizontal row of button / tag / link / icon — the same
+ * role Carbon's `cds--button-set` plays in @carbon/react. Children no longer
+ * need per-instance margin or padding; the wrapper handles inter-child space
+ * in both editor and front-end consistently.
+ *
+ * Variants:
+ *   --horizontal | --vertical            : flex direction
+ *   --gap-sm | --gap-md | --gap-lg | --gap-xl : 4 / 8 / 16 / 24 px
+ *   --align-start | --center | --end | --between : main-axis alignment
+ *   --wrap | --nowrap                    : flex-wrap
+ */
+.awt-inline-set {
+	display: flex;
+	align-items: center;
+}
+.awt-inline-set--horizontal { flex-direction: row;    }
+.awt-inline-set--vertical   { flex-direction: column; align-items: stretch; }
+.awt-inline-set--gap-sm     { gap: 0.25rem; }
+.awt-inline-set--gap-md     { gap: 0.5rem;  }
+.awt-inline-set--gap-lg     { gap: 1rem;    }
+.awt-inline-set--gap-xl     { gap: 1.5rem;  }
+.awt-inline-set--align-start   { justify-content: flex-start;    }
+.awt-inline-set--align-center  { justify-content: center;        }
+.awt-inline-set--align-end     { justify-content: flex-end;      }
+.awt-inline-set--align-between { justify-content: space-between; }
+.awt-inline-set--wrap   { flex-wrap: wrap;   }
+.awt-inline-set--nowrap { flex-wrap: nowrap; }
+/* Editor only — awt-inline-set owns child spacing via flex `gap`. Gutenberg's
+   block-list layout adds its own per-child margin (an inline-start margin by
+   default), which in a VERTICAL set surfaces as an unwanted left indent on the
+   2nd+ items. Reset it so `gap` is the single source of spacing; the front-end
+   has no such wrapper margin. */
+.editor-styles-wrapper .awt-inline-set > * { margin-block: 0 !important; margin-inline: 0 !important; }
+
+/* Editor-only adjacent-sibling safety net for the inline primitives.
+ *
+ * On the published page, adjacent inline elements (<button>, <a>, <span>) are
+ * separated by natural inline whitespace (~4px at body-02 font size) because
+ * the rendered HTML has `\n` between sibling tags and inline-formatting context
+ * collapses that to one space. Good enough as a fallback gap.
+ *
+ * In the editor canvas, Gutenberg wraps each block in a `.wp-block` container
+ * and strips that whitespace, so siblings end up flush. This rule adds a small
+ * margin in the editor only — published stays untouched. The canonical
+ * spacing solution remains `awt/inline-set`, which uses flex gap and works
+ * identically in both views. */
+body.editor-styles-wrapper .wp-block-awt-button + .wp-block-awt-button,
+body.editor-styles-wrapper .wp-block-awt-link   + .wp-block-awt-link,
+body.editor-styles-wrapper .wp-block-awt-icon   + .wp-block-awt-icon {
+	margin-inline-start: 0.5rem;
+}
+
+.cds--tag.cds--tag--sm { min-block-size: 1.25rem; }
+.cds--tag.cds--tag--md { min-block-size: 1.5rem; }
+.cds--tag.cds--tag--lg { min-block-size: 2rem; }
+
+.cds--tag--red          { background: #ffd7d9; color: #750e13; }
+.cds--tag--magenta      { background: #ffd6e8; color: #740937; }
+.cds--tag--purple       { background: #e8daff; color: #491d8b; }
+.cds--tag--blue         { background: #d0e2ff; color: #002d9c; }
+.cds--tag--cyan         { background: #bae6ff; color: #003a6d; }
+.cds--tag--teal         { background: #9ef0f0; color: #003d3d; }
+.cds--tag--green        { background: #a7f0ba; color: #044317; }
+.cds--tag--cool-gray    { background: #dde1e6; color: #121619; }
+.cds--tag--warm-gray    { background: #e5e0df; color: #171414; }
+.cds--tag--outline      { background: transparent; border: 1px solid currentColor; }
+.cds--tag--high-contrast { background: var(--cds-background-inverse, #393939); color: var(--cds-text-inverse, #ffffff); }
+
+/* Filter tag (dismissible) close button.
+ *
+ * Carbon renders the X as a small circular button sitting flush against the
+ * right edge of the pill. The button is intentionally square (so border-radius
+ * 50% on focus produces a true circle, not an ellipse), with the X centered
+ * inside, a subtle hover background, and a focus ring drawn via inset
+ * box-shadow so it follows the round border-radius.
+ *
+ * The parent tag's right padding shrinks so the close button can sit close to
+ * the edge without breaking the pill's circular cap. */
+
+/* Filter-tag right padding: zero so the circular close button sits flush
+ * against the right edge of the pill — that's the Carbon-spec visual.
+ *
+ * Carbon's compiled `.cds--tag--filter { padding-inline-end: 0 }` rule
+ * would handle this on its own, but our own base `.cds--tag` rule above
+ * uses the `padding-inline` SHORTHAND (`0.5rem`) which sets both start
+ * AND end — and shorthand-after-longhand source order means it wins over
+ * Carbon's longhand. Re-assert the zero-end here with the correct
+ * specificity. */
+.cds--tag.cds--tag--filter {
+	padding-inline-end: 0;
+}
+
+/* Close-icon: full-height circle at the right edge of the pill.
+ *
+ * Close-icon size: Carbon uses `inline/block-size: var(--cds-layout-size-
+ * height-local)` so the button is a full-height circle matching the tag.
+ * Our previous 1.25rem fixed size made the button shorter than the tag,
+ * leaving uneven top/bottom space. Use the same Carbon layout variable. */
+.cds--tag__close-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	inline-size: var(--cds-layout-size-height-local, 1.5rem);
+	block-size: var(--cds-layout-size-height-local, 1.5rem);
+	padding: 0;
+	margin: 0 0 0 0.125rem;
+	background: transparent;
+	border: 0;
+	border-radius: 50%;
+	color: inherit;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.cds--tag__close-icon > svg {
+	inline-size: 0.875rem;
+	block-size: 0.875rem;
+}
+
+.cds--tag__close-icon:hover {
+	background-color: rgba(0, 0, 0, 0.12);
+}
+
+.cds--tag__close-icon:focus,
+.cds--tag__close-icon:focus-visible {
+	outline: none;
+	box-shadow: inset 0 0 0 1px var(--cds-focus, #0f62fe);
+}
+
+/* --------------------------------------------------------------------------
+   Notification — Carbon's inline + toast variants.
+
+   Carbon's actual look is NOT a fully-saturated colored block. Two modes:
+
+     1. **High contrast (default)** — dark gray background
+        (`var(--cds-background-inverse)`) with white text and a bright,
+        inverse-colored left border (e.g., `--cds-support-error-inverse`).
+        The body of the notification is dark and the icon + border are the
+        bright "inverse" supports.
+
+     2. **Low contrast** (with `.cds--inline-notification--low-contrast`) —
+        very light tinted background (e.g., `#fff1f1` for error,
+        `--cds-notification-background-error`), dark text, and the regular
+        support color on the icon + border.
+
+   Earlier AWT applied a fully-saturated `var(--cds-support-*)` background
+   color, which looked nothing like Carbon's reference.
+   -------------------------------------------------------------------------- */
+
+.cds--inline-notification,
+.cds--toast-notification {
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	gap: 0.75rem;
+	padding-block: 0.5rem;
+	padding-inline: 1rem;
+	min-block-size: 3rem;
+	color: var(--cds-text-inverse, #ffffff);
+	background: var(--cds-background-inverse, #393939);
+	/* The left border draws via Carbon's kind-specific modifier; the base
+	 * carries a transparent stroke so the layout doesn't jitter when the
+	 * modifier class applies its color. */
+	border-inline-start: 3px solid transparent;
+}
+
+/* High-contrast (default) per-kind border + icon color uses Carbon's
+ * `--inverse` token family, which is the brighter variant designed for the
+ * dark notification background. */
+.cds--inline-notification--info,
+.cds--toast-notification--info {
+	border-inline-start-color: var(--cds-support-info-inverse, #4589ff);
+}
+.cds--inline-notification--info .cds--inline-notification__icon,
+.cds--toast-notification--info .cds--toast-notification__icon {
+	color: var(--cds-support-info-inverse, #4589ff);
+}
+
+.cds--inline-notification--success,
+.cds--toast-notification--success {
+	border-inline-start-color: var(--cds-support-success-inverse, #42be65);
+}
+.cds--inline-notification--success .cds--inline-notification__icon,
+.cds--toast-notification--success .cds--toast-notification__icon {
+	color: var(--cds-support-success-inverse, #42be65);
+}
+
+.cds--inline-notification--warning,
+.cds--toast-notification--warning {
+	border-inline-start-color: var(--cds-support-warning-inverse, #f1c21b);
+}
+.cds--inline-notification--warning .cds--inline-notification__icon,
+.cds--toast-notification--warning .cds--toast-notification__icon {
+	color: var(--cds-support-warning-inverse, #f1c21b);
+}
+
+.cds--inline-notification--error,
+.cds--toast-notification--error {
+	border-inline-start-color: var(--cds-support-error-inverse, #fa4d56);
+}
+.cds--inline-notification--error .cds--inline-notification__icon,
+.cds--toast-notification--error .cds--toast-notification__icon {
+	color: var(--cds-support-error-inverse, #fa4d56);
+}
+
+/* Low-contrast — light tinted background, dark text, regular-color icons. */
+.cds--inline-notification--low-contrast,
+.cds--toast-notification--low-contrast {
+	color: var(--cds-text-primary, #161616);
+}
+
+.cds--inline-notification--low-contrast.cds--inline-notification--info,
+.cds--toast-notification--low-contrast.cds--toast-notification--info {
+	background: var(--cds-notification-background-info, #edf5ff);
+	border-inline-start-color: var(--cds-support-info, #0043ce);
+}
+.cds--inline-notification--low-contrast.cds--inline-notification--info .cds--inline-notification__icon,
+.cds--toast-notification--low-contrast.cds--toast-notification--info .cds--toast-notification__icon {
+	color: var(--cds-support-info, #0043ce);
+}
+
+.cds--inline-notification--low-contrast.cds--inline-notification--success,
+.cds--toast-notification--low-contrast.cds--toast-notification--success {
+	background: var(--cds-notification-background-success, #defbe6);
+	border-inline-start-color: var(--cds-support-success, #24a148);
+}
+.cds--inline-notification--low-contrast.cds--inline-notification--success .cds--inline-notification__icon,
+.cds--toast-notification--low-contrast.cds--toast-notification--success .cds--toast-notification__icon {
+	color: var(--cds-support-success, #24a148);
+}
+
+.cds--inline-notification--low-contrast.cds--inline-notification--warning,
+.cds--toast-notification--low-contrast.cds--toast-notification--warning {
+	background: var(--cds-notification-background-warning, #fcf4d6);
+	border-inline-start-color: var(--cds-support-warning, #f1c21b);
+}
+.cds--inline-notification--low-contrast.cds--inline-notification--warning .cds--inline-notification__icon,
+.cds--toast-notification--low-contrast.cds--toast-notification--warning .cds--toast-notification__icon {
+	color: var(--cds-support-warning, #f1c21b);
+}
+
+.cds--inline-notification--low-contrast.cds--inline-notification--error,
+.cds--toast-notification--low-contrast.cds--toast-notification--error {
+	background: var(--cds-notification-background-error, #fff1f1);
+	border-inline-start-color: var(--cds-support-error, #da1e28);
+}
+.cds--inline-notification--low-contrast.cds--inline-notification--error .cds--inline-notification__icon,
+.cds--toast-notification--low-contrast.cds--toast-notification--error .cds--toast-notification__icon {
+	color: var(--cds-support-error, #da1e28);
+}
+
+.cds--inline-notification__details,
+.cds--toast-notification__details {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: flex-start;
+	margin: 0 0.8125rem;
+}
+
+/* Carbon's exact icon spacing — `margin-block-start` lines the icon up with
+ * the title's optical baseline (the text-wrapper itself carries `padding-
+ * block: 0.9375rem`, so the icon needs ~0.875rem top margin to sit beside
+ * the title rather than the wrapper's top edge). */
+.cds--inline-notification__icon {
+	flex-shrink: 0;
+	margin-block-start: 0.875rem;
+	margin-inline-end: 1rem;
+}
+.cds--toast-notification__icon {
+	flex-shrink: 0;
+	margin-block-start: 1rem;
+	margin-inline-end: 1rem;
+}
+
+.cds--inline-notification__text-wrapper,
+.cds--toast-notification__text-wrapper {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 0.9375rem 0;
+}
+
+.cds--inline-notification__title,
+.cds--toast-notification__title {
+	margin: 0;
+	font-weight: 600;
+}
+
+.cds--inline-notification__subtitle,
+.cds--toast-notification__subtitle {
+	font-weight: 400;
+	margin-inline-start: 0.25rem;
+}
+
+.cds--inline-notification__caption,
+.cds--toast-notification__caption {
+	margin-block-start: 0.25rem;
+	font-size: var(--cds-label-01-font-size, 0.75rem);
+	opacity: 0.85;
+}
+
+.cds--inline-notification__close-button,
+.cds--toast-notification__close-button {
+	background: transparent;
+	border: 0;
+	color: inherit;
+	padding: 0.5rem;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	flex-shrink: 0;
+	border-radius: 2px;
+}
+
+.cds--inline-notification__close-button:focus,
+.cds--toast-notification__close-button:focus {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+/* --------------------------------------------------------------------------
+   Accordion — Carbon ships visual styling; we add minimal layout so items
+   stack cleanly and the chevron heading button feels natural.
+   -------------------------------------------------------------------------- */
+
+.cds--accordion {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: block;
+}
+
+/* Carbon's compiled CSS already draws a `border-block-start` on every item, so
+ * the line between two items is the lower item's top border. Adding a
+ * `border-block-end` to every item too would double every separator (upper
+ * item's bottom + lower item's top = 2px). Only the LAST item needs a bottom
+ * border, to cap the bottom of the accordion. */
+.cds--accordion__item:last-child {
+	border-block-end: 1px solid var(--cds-border-subtle, #e0e0e0);
+}
+
+/* Heading/title/arrow visuals come from Carbon's compiled CSS:
+ *   - .cds--accordion__heading: flex row-reverse, centered, full-width, etc.
+ *   - .cds--accordion__arrow:   1rem × 1rem SVG, transform: rotate(-270deg)
+ *                               idle, transform: rotate(-90deg) active
+ *   - .cds--accordion__title:   body-01 font, padding-inline-start: 1rem
+ * Only override what Carbon assumes about button reset that we don't get from
+ * a normalize stylesheet. */
+.cds--accordion__heading {
+	background: transparent;
+	border: 0;
+	/* Height comes from min-block-size (per the size modifier below), not a
+	 * fixed padding-block. Carbon centers the content vertically via its own
+	 * `display:flex; align-items:center` rule, so a tall fixed padding here was
+	 * swamping the size-driven height — every size rendered the same ~44px. A
+	 * small inline-block padding keeps breathing room at the edges. */
+	padding-block: 0;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+}
+
+/* Accordion size scale. Carbon's compiled CSS does NOT ship the
+ * `.cds--accordion--sm/md/lg` rules (only --start/--end/--flush), so the size
+ * attribute had no visible effect. Restate Carbon's heading heights here:
+ * sm 2rem, md 2.5rem (default), lg 3rem. Heights match Carbon's size tokens. */
+.cds--accordion--sm .cds--accordion__heading { min-block-size: 2rem; }
+.cds--accordion--md .cds--accordion__heading { min-block-size: 2.5rem; }
+.cds--accordion--lg .cds--accordion__heading { min-block-size: 3rem; }
+
+.cds--accordion__heading:focus-visible {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+.cds--accordion__content {
+	padding-block: 0.5rem 1rem;
+	padding-inline: 1.5rem 1rem;
+}
+
+/* The `hidden` attribute on the content panel hides via display: none
+   (browser default); that's what view.js toggles. Carbon's own animated
+   wrapper element is deliberately not used at Stage 1 — we use `hidden` for
+   the simpler open/close contract. */
+
+/* --------------------------------------------------------------------------
+   Slice 4 — pagination, select, dropdown, content-switcher, tabs, modal,
+   code-snippet, data-table. Carbon's compiled CSS covers most of the styling;
+   these are the AWT-specific glue + overrides for cases where the base rules
+   need help.
+   -------------------------------------------------------------------------- */
+
+/* Pagination */
+.cds--pagination-nav { display: inline-flex; }
+.cds--pagination-nav__list { display: flex; gap: 0; list-style: none; margin: 0; padding: 0; }
+.cds--pagination-nav__page {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-block-size: 3rem;
+	min-inline-size: 3rem;
+	padding: 0 0.5rem;
+	color: var(--cds-text-primary, #161616);
+	text-decoration: none;
+}
+/* Pagination page links are <a> elements; without an explicit :visited color
+   they inherit the global link-visited purple. Carbon keeps pagination numbers
+   at text-primary regardless of visited state — pin it so a visited page
+   number doesn't turn purple. */
+.cds--pagination-nav__page:visited { color: var(--cds-text-primary, #161616); }
+.cds--pagination-nav__page--current { background: var(--cds-layer-selected, #c6c6c6); font-weight: 600; }
+.cds--pagination-nav__page--disabled { color: var(--cds-text-disabled, #c6c6c6); pointer-events: none; }
+.cds--pagination-nav__page--ellipsis { pointer-events: none; }
+.cds--pagination-nav__page:hover:not(.cds--pagination-nav__page--current):not(.cds--pagination-nav__page--disabled) { background: var(--cds-layer-hover-01, #e8e8e8); }
+.cds--pagination-nav__page:focus,
+.cds--pagination-nav__page:focus-visible { outline: 2px solid var(--cds-focus, #0f62fe); outline-offset: -2px; }
+
+/* Select */
+.cds--select { display: block; }
+.cds--select-input__wrapper { position: relative; }
+.cds--select-input {
+	appearance: none;
+	-webkit-appearance: none;
+	inline-size: 100%;
+	block-size: 2.5rem;
+	padding: 0 2rem 0 1rem;
+	border: 0;
+	border-block-end: 1px solid var(--cds-border-strong, #8d8d8d);
+	background: var(--cds-field-01, #f4f4f4);
+	color: var(--cds-text-primary, #161616);
+	font: inherit;
+	cursor: pointer;
+}
+.cds--select-input--sm { block-size: 2rem; }
+.cds--select-input--lg { block-size: 3rem; }
+.cds--select-input:focus { outline: 2px solid var(--cds-focus, #0f62fe); outline-offset: -2px; }
+.cds--select-input--invalid { outline: 2px solid var(--cds-support-error, #da1e28); outline-offset: -2px; }
+.cds--select__arrow { position: absolute; inset-block-start: 50%; inset-inline-end: 1rem; transform: translateY(-50%); pointer-events: none; }
+
+/* Dropdown.
+ *
+ * Carbon's compiled CSS drives the look of `.cds--list-box`, its field,
+ * menu container, and the per-item layout (block-size: 2.5rem md, hover
+ * background --cds-layer-hover, border-block-start between items, etc.).
+ * Re-stating those tokens here was a Stage 0 mistake — particularly:
+ *
+ *   .cds--list-box__menu-item__option:hover {
+ *       background: var(--cds-layer-hover-01, #e8e8e8);
+ *   }
+ *
+ * That selector hit the inner `<button>`, beat Carbon's
+ * `.cds--list-box__menu-item:hover { background: --cds-layer-hover }`
+ * on the parent `<li>`, and stripped the inter-item separator borders
+ * that Carbon's `__option { border-block-start-color: ...subtle... }`
+ * draws — so the menu looked like a flat list with no item dividers,
+ * the wrong hover token, and no selected-state visual.
+ *
+ * Things Carbon's CSS does NOT provide and we still need:
+ *
+ *   1. `.cds--dropdown__wrapper { display: block }` — Carbon's compiled
+ *      CSS doesn't style the wrapper at all; the label sits next to the
+ *      list-box and we want them stacked.
+ *   2. `.cds--list-box__menu[hidden] { display: none }` — Carbon's
+ *      visibility relies on `.cds--list-box__field[aria-expanded=false]`
+ *      hiding the menu, but our floating-ui setup keeps the menu in
+ *      flow and toggles the `hidden` attribute; that attribute alone
+ *      doesn't beat Carbon's `display: block` on the expanded menu.
+ *   3. Button reset for `.cds--list-box__menu-item__option` — Carbon's
+ *      React component uses a `<div>`, we use a `<button>` for the
+ *      keyboard / semantics tradeoff. Button user-agent styles (border,
+ *      bg, font) need clearing.
+ */
+.cds--dropdown__wrapper { display: block; }
+
+/* Carbon's compiled stylesheet has BOTH:
+ *   .cds--list-box--lg { block-size: 3rem; max-block-size: 3rem }     ← (0,1,0)
+ *   .cds--dropdown    { block-size: 2.5rem }                          ← (0,1,0)
+ * with `.cds--dropdown` declared LATER in source. Equal specificity →
+ * later wins → every dropdown locks at 40px regardless of the `--lg`
+ * (or `--sm`) modifier on the same element. Bump our overrides to
+ * specificity (0,2,0) so they beat the lone `.cds--dropdown`. */
+.cds--dropdown.cds--list-box--lg {
+	block-size: 3rem;
+	max-block-size: 3rem;
+}
+.cds--dropdown.cds--list-box--sm {
+	block-size: 2rem;
+	max-block-size: 2rem;
+}
+
+.cds--list-box__menu[hidden] { display: none; }
+
+.cds--list-box__menu-item__option {
+	display: block;
+	inline-size: 100%;
+	block-size: 100%;
+	background: transparent;
+	/* Reset only inline edges + block-end here. Don't touch
+	 * `border-block-start` — Carbon's compiled rule sets it to
+	 * `1px solid transparent` with a `border-block-start-color:
+	 * var(--cds-border-subtle-01)` override that renders the subtle
+	 * separator between items. A blanket `border: 0` reset wipes that
+	 * declaration's width AND inserts `border-block-start-color:
+	 * currentColor`, so the separator ends up painted in the text
+	 * colour (#525252) — visible but too dark, doesn't match Carbon. */
+	border-inline: 0;
+	border-block-end: 0;
+	cursor: pointer;
+	text-align: start;
+	font: inherit;
+	color: inherit;
+}
+
+.cds--list-box__menu-item__option:focus,
+.cds--list-box__menu-item__option:focus-visible {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+/* Chevron rotation on open.
+ *
+ * Carbon's compiled CSS rotates the chevron via the
+ * `.cds--list-box__menu-icon--open` modifier on the icon ITSELF. Our
+ * view.js toggles `.cds--list-box--expanded` on the dropdown root
+ * (matching the listbox-pattern convention), so we bridge the two
+ * naming schemes here. Carbon already declares `transition: transform
+ * 70ms cubic-bezier(.2,0,.38,.9)` on `.cds--list-box__menu-icon`, so
+ * the rotation animates smoothly. */
+.cds--list-box--expanded .cds--list-box__menu-icon {
+	transform: rotate(180deg);
+}
+
+/* Content switcher.
+ *
+ * Carbon's pattern: NO border on the wrapper — each button carries inset
+ * box-shadows that act as the outer ring (first/last buttons get an inset
+ * on their start/end edge respectively). An interior divider sits as a
+ * vertically-centered fixed-height `::before` line on every button after
+ * the first. A wrapper border on top of those shadows produces a double
+ * outline.
+ *
+ * Selected state colors are HARDCODED instead of `var(--cds-text-inverse)` —
+ * we hit a case where the variable resolved to dark in editor iframes (no
+ * `cds--white` scope) producing black-on-black text. Hardcoded ensures the
+ * contrast holds regardless of the iframe's token cascade.
+ *
+ * Focus indicator uses inset `box-shadow` (not `outline`) so it composes
+ * predictably with the border-emulating box-shadows on the same element.
+ * `outline` at `-2px offset` against multi-layer inset shadows produced a
+ * focus ring that visually shifted from the button's bounds.
+ */
+/* Wrapper.
+ *
+ * Carbon's `.cds--content-switcher` rule sets `outline: .0625rem solid
+ * var(--cds-border-inverse, #161616); outline-offset: -.0625rem` — that
+ * outline is what actually draws the visible top/bottom/left/right edges
+ * of the whole switcher (per-button border-block-start/end is inert in
+ * the cascade because Carbon's `border: none` declared in the same rule
+ * wipes the block borders before they apply — confirmed by inspecting
+ * Carbon's reference computed-styles).
+ *
+ * Match Carbon's `border-radius: .25rem` (4px). The earlier `2px` made
+ * the wrapper outline corners less rounded than the inner buttons' 4px
+ * corners, which squared off the visible end-cap curve. */
+.cds--content-switcher {
+	display: inline-flex;
+	border-radius: 0.25rem;
+}
+
+.cds--content-switcher-btn {
+	position: relative;
+	/* Height must follow the wrapper's size token, not a hardcoded
+	 * `min-block-size: 2.5rem` (which previously locked every button to
+	 * 40px regardless of size — making the `sm` wrapper (32px) too short
+	 * to contain its own 40px buttons, which then overflowed). The wrapper
+	 * adds `cds--layout--size-{sm|md|lg}` and that supplies
+	 * `--cds-layout-size-height` (2 / 2.5 / 3rem); use it directly here.
+	 *
+	 * `padding-block: 0` lets the height be exactly the layout-size token;
+	 * the previous `padding: .5rem 1rem` added 16px of vertical padding on
+	 * top of `min-block-size: 2.5rem`, contributing to the 40px-everywhere
+	 * problem on sm specifically. Inline padding (1rem) is preserved. */
+	padding-block: 0;
+	padding-inline: 1rem;
+	min-block-size: var(--cds-layout-size-height-local, 2.5rem);
+	background: transparent;
+	border: 0;
+	cursor: pointer;
+	font: inherit;
+	color: var(--cds-text-primary, #161616);
+	/* No per-button top/bottom edges here — the wrapper's outline draws
+	 * the full perimeter (top, bottom, and the outer left/right corners
+	 * across the rounded radii). Trying to also draw them on each button
+	 * via either real borders or inset box-shadow created a double-draw
+	 * that squared off the rounded first/last corners. */
+}
+
+/* End-cap side edges as box-shadow (not border) so they don't add to the
+ * button's inline size — keeps each segment the same width as Carbon's
+ * reference. `.cds--content-switcher` prefix lifts specificity to (0,3,2)
+ * to beat Carbon's `.cds--content-switcher:not(.cds--content-switcher
+ * --icon-only) .cds--content-switcher-btn:first-child` rule (0,3,1). */
+.cds--content-switcher .cds--content-switcher-btn:first-child {
+	box-shadow: inset 1px 0 0 0 #161616;
+	border-start-start-radius: 0.25rem;
+	border-end-start-radius: 0.25rem;
+}
+
+.cds--content-switcher .cds--content-switcher-btn:last-child {
+	box-shadow: inset -1px 0 0 0 #161616;
+	border-start-end-radius: 0.25rem;
+	border-end-end-radius: 0.25rem;
+}
+
+/* Interior divider — fixed 1rem height, vertically centered between the two
+ * neighbour buttons. inset-block-start:50% + translateY(-50%) is the
+ * canonical centering pattern; my earlier `inset-block-start: 1rem;
+ * inset-block-end: 1rem` produced a thin line at the top half of the
+ * button instead of a centered short divider. */
+.cds--content-switcher-btn + .cds--content-switcher-btn::before {
+	content: '';
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-start: 0;
+	block-size: 1rem;
+	inline-size: 1px;
+	background: #c6c6c6;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+
+/* awt/content-switcher panels — the content shown for the selected segment.
+ * Carbon has no panel container of its own (the switcher is just the segmented
+ * control), so this is an AWT-native wrapper: a little breathing room below the
+ * control, and a visible focus ring since the panel is focusable (tabindex 0),
+ * mirroring awt/tabs' panel behavior. */
+.awt-content-switcher__panel {
+	margin-block-start: 1rem;
+}
+.awt-content-switcher__panel:focus-visible {
+	outline: 2px solid var(--cds-focus, #0f62fe);
+	outline-offset: -2px;
+}
+
+/* ---- Editor preview parity ----------------------------------------------
+ * In the editor, InnerBlocks renders the segment buttons and the content
+ * panels in one flat vertical flow — nothing like the published DOM (a
+ * `.cds--content-switcher` tablist + sibling panels, only one shown). These
+ * rules + the block's edit.js effect reshape that flat list to mirror the
+ * front end: the segment buttons sit in a horizontal segmented control, every
+ * panel breaks to a full-width row below it, and the effect hides all panels
+ * but the active one. Each item button is wrapped in its own
+ * `[data-block][data-type]` element, so the published cascade (group outline,
+ * adjacent-sibling dividers, :first/:last-child end-caps) never matches — we
+ * recreate the segmented look here with per-button borders instead. */
+.awt-content-switcher--editor {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: stretch;
+}
+/* The item block's wrapper element IS the `<button.cds--content-switcher-btn>`
+ * (its edit.js spreads useBlockProps onto the button), so style the segment
+ * directly — there is no descendant button to target. Segments fill the
+ * control in equal fractions (Carbon's published buttons are `flex: 1`), so
+ * the editor row matches the front end's equal thirds rather than collapsing
+ * to label width. */
+.awt-content-switcher--editor > [data-type="awt/content-switcher-item"] {
+	flex: 1 1 0;
+	min-inline-size: 0;
+	margin-block: 0;
+	/* The block wrapper is the button and computes to `display:flex` with
+	 * `align-items:normal` (stretch) in the editor, which top-aligns the label
+	 * text. Force vertical centering + left alignment to match the front end. */
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	/* Outer group edge: dark top + bottom run continuously across the row;
+	 * the left/right caps are added on the first + last segment below. The
+	 * interior boundaries are drawn as thin gray dividers (::before), not as
+	 * borders, so they read like Carbon's short centered divider rather than
+	 * a heavy full-height line. */
+	border-block: 1px solid #161616;
+	border-inline: 0;
+}
+.awt-content-switcher--editor > [data-type="awt/content-switcher-item"]:first-of-type {
+	border-inline-start: 1px solid #161616;
+	border-start-start-radius: 0.25rem;
+	border-end-start-radius: 0.25rem;
+}
+.awt-content-switcher--editor > [data-type="awt/content-switcher-item"]:has(+ [data-type="awt/content-switcher-panel"]) {
+	border-inline-end: 1px solid #161616;
+	border-start-end-radius: 0.25rem;
+	border-end-end-radius: 0.25rem;
+}
+/* Thin gray interior divider — short + vertically centered between segments,
+ * matching Carbon's `.cds--content-switcher-btn + ...::before`. */
+.awt-content-switcher--editor > [data-type="awt/content-switcher-item"] + [data-type="awt/content-switcher-item"]::before {
+	content: '';
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-start: 0;
+	block-size: 1rem;
+	inline-size: 1px;
+	background: #c6c6c6;
+	transform: translateY(-50%);
+	pointer-events: none;
+}
+/* The selected segment's dark fill supplies its own boundary, so suppress the
+ * gray divider on the selected segment and on the one immediately after it —
+ * matching Carbon, where dividers adjacent to the selected button are hidden. */
+.awt-content-switcher--editor > .cds--content-switcher--selected::before,
+.awt-content-switcher--editor > .cds--content-switcher--selected + [data-type="awt/content-switcher-item"]::before {
+	display: none;
+}
+/* Panels: each on its own full-width row beneath the control. */
+.awt-content-switcher--editor > [data-type="awt/content-switcher-panel"] {
+	flex: 1 0 100%;
+	margin-block-start: 1rem;
+}
+.awt-content-switcher--editor > [data-type="awt/content-switcher-panel"][hidden] {
+	display: none;
+}
+
+/* Hover + active (inactive buttons).
+ *
+ * Background lands on `#e8e8e8` (Gray 10). Carbon's `:hover` rule uses
+ * `var(--cds-layer-hover)`, but the token sometimes drifts to a
+ * near-white tone in unexpected scopes and makes the hover surface read
+ * as the same as the page bg. Hardcoded is robust.
+ *
+ * `:active` (mousedown) gets the same treatment so it doesn't flash a
+ * different colour mid-click.
+ *
+ * Border repaint: Carbon's `:hover` rule sets `z-index: 3` on the button,
+ * which elevates it above the wrapper's `outline` that draws the
+ * top/bottom edges of the segmented control. That makes the hovered
+ * button's gray fill paint over those edges — visually the borders
+ * "disappear" on hover. Re-state them as inset box-shadows on the hover
+ * state itself so each button repaints its own contribution to the
+ * outer rectangle while z-indexed above it. */
+.cds--content-switcher .cds--content-switcher-btn:hover:not(.cds--content-switcher--selected),
+.cds--content-switcher .cds--content-switcher-btn:not(.cds--content-switcher--selected):active {
+	background-color: #e8e8e8;
+	color: #161616;
+	box-shadow: inset 0 1px 0 0 #161616,
+				inset 0 -1px 0 0 #161616;
+}
+
+/* First-child also needs the left edge repainted (the wrapper outline's
+ * left side was drawn there). Stacks left + top + bottom shadows. */
+.cds--content-switcher .cds--content-switcher-btn:first-child:hover:not(.cds--content-switcher--selected),
+.cds--content-switcher .cds--content-switcher-btn:first-child:not(.cds--content-switcher--selected):active {
+	box-shadow: inset 1px 0 0 0 #161616,
+				inset 0 1px 0 0 #161616,
+				inset 0 -1px 0 0 #161616;
+}
+
+/* Last-child needs the right edge repainted. */
+.cds--content-switcher .cds--content-switcher-btn:last-child:hover:not(.cds--content-switcher--selected),
+.cds--content-switcher .cds--content-switcher-btn:last-child:not(.cds--content-switcher--selected):active {
+	box-shadow: inset -1px 0 0 0 #161616,
+				inset 0 1px 0 0 #161616,
+				inset 0 -1px 0 0 #161616;
+}
+
+/* Focus (non-selected buttons).
+ *
+ * Two requirements that the previous generic `:focus` rule didn't meet:
+ *
+ * 1. The focus ring AND the black top/bottom edge borders must both be
+ *    visible. Earlier the focus rule set box-shadow to just the focus
+ *    ring (blue+white), which painted over the edges so the borders
+ *    "disappeared" when a button had focus but no hover.
+ * 2. When the button is `:focus` + `:hover` (mouse moved onto a focused
+ *    button) or `:focus` + `:active` (mousedown), the focus ring must
+ *    still show. The previous setup let `:hover:not(:selected)` win on
+ *    box-shadow because it was later in source — focus ring vanished
+ *    the moment the mouse entered or pressed down.
+ *
+ * Solution: combine the focus ring AND the edge borders in a single
+ * box-shadow declaration on `:focus`, and place these rules AFTER the
+ * `:hover`/`:active` rules so equal-specificity ties resolve in favour
+ * of focus. Stacking order in box-shadow lists: FIRST item paints on
+ * top. We list edges first → they land above the focus ring. The user
+ * sees the focus ring as a 3px blue/white inner accent, with the
+ * 1px-thick black outer edge intact.
+ *
+ * Specificity: each selector below carries `:not(.cds--content-switcher
+ * --selected)` (1 class) on top of the (0,3,1) chain → (0,4,2). Equal
+ * to the matching hover rules; this block comes later in source, so it
+ * wins.
+ *
+ * `z-index: 4` (above hover's z-index 3) keeps the focused button
+ * visually in front of any neighbouring hovered button — important for
+ * the case where button 2 has focus and the user moves the mouse onto
+ * button 3 (button 3 elevates to z-index 3 via hover, but button 2 must
+ * stay above so its focus indicator isn't visually clipped by the
+ * neighbour's hover bg). */
+.cds--content-switcher .cds--content-switcher-btn:not(.cds--content-switcher--selected):focus,
+.cds--content-switcher .cds--content-switcher-btn:not(.cds--content-switcher--selected):focus-visible {
+	outline: none;
+	box-shadow: inset 0 1px 0 0 #161616,
+				inset 0 -1px 0 0 #161616,
+				inset 0 0 0 2px var(--cds-focus, #0f62fe),
+				inset 0 0 0 3px #ffffff;
+	z-index: 4;
+}
+
+.cds--content-switcher .cds--content-switcher-btn:first-child:not(.cds--content-switcher--selected):focus,
+.cds--content-switcher .cds--content-switcher-btn:first-child:not(.cds--content-switcher--selected):focus-visible {
+	box-shadow: inset 1px 0 0 0 #161616,
+				inset 0 1px 0 0 #161616,
+				inset 0 -1px 0 0 #161616,
+				inset 0 0 0 2px var(--cds-focus, #0f62fe),
+				inset 0 0 0 3px #ffffff;
+}
+
+.cds--content-switcher .cds--content-switcher-btn:last-child:not(.cds--content-switcher--selected):focus,
+.cds--content-switcher .cds--content-switcher-btn:last-child:not(.cds--content-switcher--selected):focus-visible {
+	box-shadow: inset -1px 0 0 0 #161616,
+				inset 0 1px 0 0 #161616,
+				inset 0 -1px 0 0 #161616,
+				inset 0 0 0 2px var(--cds-focus, #0f62fe),
+				inset 0 0 0 3px #ffffff;
+}
+
+/* Suppress Carbon's focus-state overlays for non-selected buttons.
+ *
+ * Carbon ships TWO different focus-state pseudo-element overlays that
+ * each individually swallow the label:
+ *
+ *   1. `:focus::after` expands ::after to a full-button white rectangle
+ *      via `transform: scaleY(1)` + `background: white`.
+ *   2. `:focus::before` expands ::before from a 1rem-tall separator
+ *      sliver into a `block-size:100%; inline-size:100%` overlay with
+ *      a blue 2px inset box-shadow.
+ *
+ * Carbon's base `::before` rule sets `z-index: 2`. Label sits at
+ * `z-index: 1`, so a full-size ::before paints OVER the label and the
+ * "Grid" / "Timeline" text vanishes the moment the button is focused.
+ *
+ * The fix is to pin BOTH pseudo-elements back to their non-focus
+ * geometry. We draw the focus ring via the button's own `:focus
+ * box-shadow` (above) — Carbon's pseudo-driven indicator is redundant
+ * once we own the ring, and trying to keep their indicator alongside
+ * our label means juggling z-indices Carbon's CSS doesn't expose
+ * cleanly. Suppress and move on.
+ *
+ * Specificity: `.cds--content-switcher` prefix bumps each selector to
+ * (0,4,2), beating Carbon's (0,3,1) focus rules even before source
+ * order tie-breaks. */
+/* `!important` is intentional here. Carbon ships several overlay rules
+ * with `:has()` and sibling combinators that reach specificity (0,5,1)
+ * or higher — examples:
+ *
+ *   .cds--content-switcher-btn:focus:has(+.cds--content-switcher-btn
+ *     :not(.cds--content-switcher--selected):hover):before {
+ *       block-size: 100%; inline-size: 100%; box-shadow: ...
+ *   }
+ *   .cds--content-switcher-btn:not(.cds--content-switcher--selected)
+ *     :hover+.cds--content-switcher-btn:focus:after {
+ *       background-color: #fff; transform: scaleY(1)
+ *   }
+ *
+ * Matching those selector chains in our overrides means cascading
+ * five-class selector strings that are brittle and hard to read. Since
+ * we definitively don't want Carbon's pseudo-driven focus indicator
+ * (we draw the focus ring on the button itself via box-shadow), the
+ * cleanest gesture is `!important` on the suppression. Localised to
+ * one component, well-commented, and stops the user from chasing
+ * regressions every time a neighbouring button enters a new state. */
+.cds--content-switcher .cds--content-switcher-btn:not(.cds--content-switcher--selected)::after {
+	transform: scaleY(0) !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+}
+
+.cds--content-switcher .cds--content-switcher-btn:not(.cds--content-switcher--selected)::before {
+	block-size: 1rem !important;
+	inline-size: 1px !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+	border-block-start: 0 !important;
+	border-block-end: 0 !important;
+}
+
+/* Selected.
+ *
+ * Token-driven so the colours flip when the theme variant changes
+ * (white/g10 ↔ g90/g100). Carbon paints the visible selected surface
+ * via the `::after` pseudo at `transform: scaleY(1)` with
+ * `background: var(--cds-layer-selected-inverse)`. We mirror that token
+ * on the button itself so the painted background stays in sync if
+ * the ::after is ever suppressed (e.g., editor preview, RTL scope).
+ *
+ * `--cds-layer-selected-inverse` resolves to #161616 in light themes
+ * and #f4f4f4 in dark themes. `--cds-text-inverse` is its paired text
+ * token (#fff in light themes, #161616 in dark themes), so the label
+ * stays high-contrast against the surface in either direction.
+ *
+ * The previous hardcoded `#161616 / #fff` worked in light mode but
+ * broke in dark mode: Carbon's ::after painted the light overlay over
+ * the dark background, then the hardcoded white label disappeared
+ * into the now-light surface ("white-on-white" — the bug). */
+.cds--content-switcher-btn.cds--content-switcher--selected,
+.cds--content-switcher-btn[aria-selected="true"] {
+	background: var(--cds-layer-selected-inverse, #161616);
+	color: var(--cds-text-inverse, #ffffff);
+	z-index: 3;
+}
+
+.cds--content-switcher-btn.cds--content-switcher--selected:hover,
+.cds--content-switcher-btn[aria-selected="true"]:hover {
+	background: var(--cds-layer-selected-inverse, #161616);
+	color: var(--cds-text-inverse, #ffffff);
+}
+
+/* Focus indicator via inset box-shadow so it lines up exactly with the
+ * button's bounding box (vs `outline` at -2px which floats above the
+ * other inset shadows and can look offset). Stacks the focus ring AND
+ * the border shadows on the same element. */
+.cds--content-switcher-btn:focus,
+.cds--content-switcher-btn:focus-visible {
+	outline: none;
+	box-shadow: inset 0 0 0 2px var(--cds-focus, #0f62fe),
+				inset 0 0 0 3px #ffffff;
+	z-index: 4;
+}
+
+/* Selected + focus: inner ring uses the same selected-surface token so it
+ * tracks the theme variant. In light mode this lands on #161616 (dark
+ * inner ring matching the dark surface, blue ring visible between).
+ * In dark mode it flips to #f4f4f4 (light inner ring matching the
+ * light surface). Hardcoding #161616 here used to flash a dark inner
+ * ring on the now-light dark-mode surface — visually correct from a
+ * contrast standpoint, but inconsistent with the rest of the button. */
+.cds--content-switcher-btn.cds--content-switcher--selected:focus,
+.cds--content-switcher-btn[aria-selected="true"]:focus {
+	box-shadow: inset 0 0 0 2px var(--cds-focus, #0f62fe),
+				inset 0 0 0 3px var(--cds-layer-selected-inverse, #161616);
+}
+
+/* THE bug fix.
+ *
+ * Carbon's `.cds--content-switcher-btn::after` is a full-button pseudo
+ * rectangle with `background: #161616` (the selected-state visual).
+ * Default is `transform: scaleY(0)` and selected expands to `scaleY(1)`.
+ * That overlay paints OVER the button's text content unless the label
+ * sits in a positioned element with a higher stacking context.
+ *
+ * Carbon's own `cds--content-switcher__label` rule sets `z-index: 1` but
+ * forgets `position`, so the z-index does nothing on its own — render.php
+ * wraps the label in this class AND we add `position: relative` here so
+ * the z-index actually lifts the text above the ::after overlay. */
+.cds--content-switcher__label {
+	position: relative;
+	/* Must out-stack BOTH the selected-state `::after` overlay AND the
+	 * interior-divider `::before`. Carbon's `::after` sits at z-index auto on
+	 * the front end (so z-index 1 sufficed), but once a segment becomes the
+	 * selected block in the editor it forms a stacking context where `::after`
+	 * resolves to z-index 1 — tying the label and, since pseudos paint after
+	 * content, hiding the dark-overlaid label text. `::before` is z-index 2.
+	 * z-index 3 clears both in every state. */
+	z-index: 3;
+}
+
+/* Tabs.
+ *
+ * Carbon's compiled CSS covers `.cds--tab--list` (the tab-list flex
+ * container), `.cds--tabs__nav-item` (the LI wrapper — `flex: 1 0 auto`
+ * for equal sizing), `.cds--tabs__nav-link` (the button reset + sizing
+ * + transitions), `.cds--tabs__nav-item--selected` (the 2px
+ * `--cds-border-interactive` underline), and `.cds--tab-content`
+ * (panel padding + background).
+ *
+ * The Stage 0 block here re-stated all of that against the wrong list
+ * class (`.cds--tab-list` single-dash instead of Carbon's
+ * `.cds--tab--list` double-dash) and with mismatched paddings — the
+ * net was a flat 20px-tall tab row with no selected indicator. Fixed
+ * the class name in render.php / view.js and removed the overrides
+ * here so Carbon's CSS drives the look.
+ *
+ * Two overrides we still need:
+ *
+ *   1. `.cds--tabs { display: block }`: Carbon's base rule sets
+ *      `display: flex` because its React component renders the tab
+ *      list and the tab content as separate top-level siblings
+ *      (`.cds--tabs` contains only the list; panels live in a sister
+ *      `.cds--tab-content-wrapper`). Our render keeps panels INSIDE
+ *      `.cds--tabs` for a simpler block structure — with Carbon's
+ *      `display: flex`, the list and the active panel laid out
+ *      side-by-side instead of stacking. Override to block.
+ *
+ *   2. `.cds--tab-content[hidden] { display: none }`: Carbon doesn't
+ *      ship a rule that responds to the `hidden` attribute, only to
+ *      internal React-managed state. Our view.js toggles `hidden`, so
+ *      we need the rule to actually hide the inactive panels.
+ */
+.cds--tabs {
+	display: block;
+	/* Carbon's `.cds--tabs` rule (in carbon.min.css) constrains the
+	 * container with `max-block-size: var(--cds-layout-size-height-xl)`
+	 * + `overflow-x: hidden` because in @carbon/react the panels live
+	 * as SISTERS of `.cds--tabs`, not inside it (the .cds--tabs box
+	 * is just the scrollable tab-strip).
+	 *
+	 * Our render.php nests panels INSIDE `.cds--tabs` so they remain
+	 * direct children of the awt/tabs block (simpler InnerBlocks story).
+	 * Result: the panel content overflows the constrained 64px box and
+	 * gets clipped — clicking a tab visibly toggled the panel hidden
+	 * attribute, but the revealed content stayed invisible because the
+	 * parent's max-height + overflow:hidden cropped it. Lift both
+	 * constraints so the panel can expand to its natural height. */
+	max-block-size: none;
+	overflow: visible;
+}
+.cds--tab-content[hidden] { display: none; }
+
+/* Horizontal tab strip with overflow-nav buttons.
+ *
+ * Carbon's mobile/narrow-viewport behavior pages the tablist horizontally
+ * instead of wrapping or clipping. We mirror that with a flex row:
+ *
+ *   [ ← prev ][ scrollable <ul> ][ next → ]
+ *
+ * The <ul> uses `overflow-x: auto` so users can swipe/scroll directly;
+ * view.js shows/hides the chevron buttons based on `scrollLeft` and
+ * `scrollWidth`. Carbon's compiled CSS already styles the buttons
+ * themselves (background tokens, hover/focus, hidden modifier). All we
+ * need to add is the flex layout + scroll behavior on the <ul>.
+ *
+ * `min-inline-size: 0` on a flex child is the well-known gotcha — without
+ * it, the <ul>'s `min-width: auto` (the default for flex items) refuses
+ * to shrink below its content's intrinsic width, so `overflow-x: auto`
+ * never has anything to scroll and the buttons would never appear. */
+.awt-tabs__strip {
+	display: flex;
+	align-items: stretch;
+	inline-size: 100%;
+	min-inline-size: 0;
+}
+.awt-tabs__strip > .cds--tab--list {
+	flex: 1 1 auto;
+	min-inline-size: 0;
+	overflow-x: auto;
+	/* Hide the native scrollbar — Carbon doesn't show one. The
+	 * overflow-nav buttons are the affordance. Users can still scroll
+	 * with touch/trackpad gestures. */
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+.awt-tabs__strip > .cds--tab--list::-webkit-scrollbar {
+	display: none;
+}
+
+/* Vertical tabs.
+ *
+ * Carbon's compiled CSS only provides _partial_ vertical-tab styling — it
+ * sets `flex-direction: column` on `.cds--tab--list` and bumps each nav-item
+ * to `block-size: 4rem; inline-size: 100%`, but it relies on a PARENT grid
+ * container to put the tab list and the panels side by side (the React
+ * component composes `<TabList>` and `<TabPanels>` inside a `display: grid`
+ * wrapper with `grid-column: span 2` on the tablist).
+ *
+ * We render tabs + panels as siblings inside `.cds--tabs`. Make
+ * `.cds--tabs--vertical` itself the grid container so the tab list becomes
+ * a left sidebar and the panels stack in the right column. */
+.cds--tabs--vertical {
+	display: grid;
+	grid-template-columns: 12rem 1fr;
+	column-gap: 0;
+}
+/* Editor only — the block editor renders tab + tab-panel children as flat
+   block-list siblings (no `.cds--tab--list` / `.cds--tab-content` wrappers),
+   so the 2-column grid above mis-places them. Fall back to a normal vertical
+   stack in the editor for a coherent preview; the published page uses the
+   grid. (Reproducing Carbon's exact vertical structure isn't possible with
+   Gutenberg InnerBlocks, which can't split children into two containers.) */
+/* Editor: vertical tabs can't reproduce Carbon's grid — Gutenberg InnerBlocks
+   can't split the tab buttons and panels into the separate `.cds--tab--list` /
+   `.cds--tab-content` containers Carbon's vertical grid needs (they render as
+   flat block-list siblings). Preview them exactly like the horizontal tabs the
+   editor already shows fine — a wrapping tab row above full-width stacked
+   panels — by undoing the vertical-only nav-item sizing. !important because
+   theme editor styles are auto-prefixed with `body.editor-styles-wrapper`,
+   which raises the base rules' specificity above a plain class selector. */
+.editor-styles-wrapper .cds--tabs--vertical {
+	/* Force the two-column grid (the prefixed base `.cds--tabs{display:flex}`
+	   otherwise wins on specificity in the editor). `dense` is the key: the
+	   editor shows ALL panels (no tab-switching), and the children are flat —
+	   4 tab buttons then 4 panels in DOM order. Without dense, auto-placement
+	   fills col 1 rows 1-4 with the tabs, then drops the panels into col 2
+	   starting at row 4 (leaving a big empty gap up top). Dense back-fills col 2
+	   from row 1, so each panel lands beside its own tab. */
+	display: grid !important;
+	grid-template-columns: 12rem 1fr;
+	grid-auto-flow: dense;
+}
+/* The editor renders tab + tab-panel blocks as flat siblings (no
+   `.cds--tab--list` / `.cds--tab-content` wrappers the published grid places).
+   Assign the real editor children into the columns so the preview is genuinely
+   vertical: tab buttons stacked in the left column, panels in the right. */
+.editor-styles-wrapper .cds--tabs--vertical > .wp-block-awt-tab { grid-column: 1; }
+.editor-styles-wrapper .cds--tabs--vertical > .wp-block-awt-tab-panel {
+	grid-column: 2;
+	/* Each panel sits in its own row aligned to its tab; align content to the
+	   top of the (tab-height) row rather than stretching/centering. */
+	align-self: start;
+}
+/* Editor: `.cds--tab-content`'s inline padding comes from a Carbon density
+   variable (`--cds-layout-density-padding-inline-local`) that the canvas never
+   initializes, and Gutenberg's block-list reset zeroes it — so editor tab
+   panels (horizontal and vertical) lost the 1rem side padding the published
+   page has. Restore it to match published. !important beats the block-list
+   reset. */
+.editor-styles-wrapper .cds--tab-content { padding-inline: 1rem !important; }
+.cds--tabs--vertical > .cds--tab--list {
+	grid-column: 1;
+	grid-row: 1 / -1;       /* sidebar spans every panel row */
+	flex-direction: column;
+	inline-size: 100%;
+	border-inline-end: 1px solid var(--cds-border-subtle, #e0e0e0);
+}
+.cds--tabs--vertical > .cds--tab-content {
+	grid-column: 2;
+	padding-inline: 1rem;
+	padding-block: 1rem 0;
+}
+.cds--tabs--vertical .cds--tabs__nav-item {
+	inline-size: 100%;
+	block-size: 4rem;
+}
+/* Selected indicator moves from bottom-border (horizontal) to left-border
+ * (vertical) — Carbon paints it via `box-shadow: inset 3px 0 0 0 …`. */
+.cds--tabs--vertical .cds--tabs__nav-link {
+	display: flex;
+	align-items: center;
+	border-block-end: none;
+	border-inline-start: 2px solid var(--cds-border-subtle, #e0e0e0);
+	inline-size: 100%;
+}
+.cds--tabs--vertical > .cds--tab--list > .cds--tabs__nav-item:has(.cds--tabs__nav-item--selected) .cds--tabs__nav-link,
+.cds--tabs--vertical > .cds--tab--list > .cds--tabs__nav-item .cds--tabs__nav-item--selected {
+	border-inline-start: 2px solid var(--cds-border-interactive, #0f62fe);
+	border-block-end: none;
+}
+
+/* Carbon's `.cds--tabs .cds--tabs__nav-link` rule already provides the
+ * key visual for line tabs: a 2px gray bottom border + `--cds-text-secondary`
+ * color + Carbon's body-compact-01 typography. The selected button's
+ * `cds--tabs__nav-item--selected` class (which our view.js applies
+ * directly to the button) swaps that border-bottom to
+ * `var(--cds-border-interactive)` for the blue indicator — that's where
+ * the colored indicator under the active tab comes from.
+ *
+ * The bits Carbon does NOT cover, and we need to add:
+ *
+ *   1. Click-target height. Carbon's bare nav-link has no padding-block
+ *      and no min-block-size — it collapses to the text's natural
+ *      height. The "proper sizing" rule lives inside Carbon's contained
+ *      / skeleton variants we're not using.
+ *   2. Fill-the-LI width. Carbon's per-link bottom border looks broken
+ *      ("dashed" / gappy across tabs) unless each link stretches to
+ *      fill its parent LI — otherwise the link is content-width and
+ *      the LI's leftover space has no border, making the gray line
+ *      look interrupted between tabs.
+ *   3. Bold for the selected label (Carbon's reference uses a slightly
+ *      heavier weight on the active tab to reinforce selection
+ *      alongside the blue indicator).
+ */
+.cds--tabs__nav-link {
+	display: flex;
+	align-items: center;
+	inline-size: 100%;
+	min-block-size: 3rem;
+	padding-block: 0.5rem;
+	padding-inline: 1rem;
+}
+
+/* Hover indicator on the LINK (not the LI).
+ *
+ * Carbon's hover rule adds `border-block-end: 2px solid border-strong`
+ * to the LI. The static rest-state gray line is on the LINK
+ * (`border-block-end: 2px solid border-subtle`), at the link's bottom
+ * edge — inside the LI. The LI's bottom edge sits 2px below that
+ * (since the LI's content fills up to and including the link's
+ * border). So Carbon's hover indicator drew BELOW the static line —
+ * the "slightly below" misalignment the user reported.
+ *
+ * Fix: keep the indicator on the LINK so it sits at the same y as
+ * the rest-state line. On hover, just swap the link's border-color
+ * from subtle to strong. Suppress Carbon's LI hover border to avoid
+ * the doubled / offset line. */
+/* Specificity boost: Carbon's `.cds--tabs .cds--tabs__nav-link` rule
+ * (which sets `border-block-end: 2px solid --cds-border-subtle`) is
+ * (0,2,0). A bare `.cds--tabs__nav-link:hover { ... }` is also (0,2,0)
+ * — same specificity, mine wins on source order — BUT a different
+ * Carbon rule `.cds--tabs__nav-item .cds--tabs__nav-link` is (0,2,0)
+ * too and lands LATER in the cascade, so my override gets shadowed.
+ * Prefix with `.cds--tabs` so our hover rule is (0,3,1)/(0,3,0) and
+ * beats every Carbon nav-link selector chain. */
+.cds--tabs .cds--tabs__nav-link:hover {
+	color: var(--cds-text-primary, #161616);
+	border-block-end-color: var(--cds-border-strong, #8d8d8d);
+}
+
+.cds--tabs:not(.cds--tabs--contained) .cds--tabs__nav-item:not(.cds--tabs__nav-item--selected):not(.cds--tabs__nav-item--disabled):hover {
+	border-block-end: 0;
+}
+
+.cds--tabs__nav-item--selected,
+[aria-selected="true"].cds--tabs__nav-link {
+	color: var(--cds-text-primary, #161616);
+	font-weight: 600;
+}
+
+/* Tab content gets a small top padding to separate it from the tab row. */
+.cds--tab-content {
+	padding-block-start: 1rem;
+}
+
+/* Modal.
+ *
+ * Carbon's compiled CSS owns the entire modal layout:
+ *
+ *   - `.cds--modal` is `position: fixed; inset: 0; display: flex` with
+ *     `background: var(--cds-overlay)` (the scrim) and 100vw/100vh sizing.
+ *   - Visibility is opacity-driven via `:not(--enable-presence)` and the
+ *     `.is-visible` modifier — our view.js toggles `.is-visible` which
+ *     animates the modal in/out smoothly.
+ *   - `.cds--modal-container` uses CSS grid: header in `grid-row: 1`,
+ *     content auto-sized, footer pinned to `grid-row: -1` with
+ *     `margin-block-start: auto`.
+ *   - `.cds--modal-footer { display: flex; block-size: 4rem; ... }` plus
+ *     `.cds--modal-footer .cds--btn { flex: 0 1 50%; block-size: 4rem;
+ *     padding-block: 0.875rem 2rem }` produce the signature tall
+ *     asymmetric Cancel/Primary action buttons.
+ *
+ * The Stage 0 block here re-stated all of that with `display: flex`
+ * (flexbox instead of grid), `padding: 1rem` on the footer (no
+ * block-size, no 50% button flex), `display: none` toggled by
+ * `.is-visible` (broke Carbon's opacity transition), and rem-based
+ * max-widths that fought Carbon's viewport-percentage container sizes.
+ * Net effect: the modal opened but rendered with the wrong proportions
+ * and the action buttons mis-laid out.
+ *
+ * Removed entirely — Carbon's compiled CSS handles every piece. The
+ * `.cds--modal--danger` modifier on the wrapper plus the
+ * `cds--btn--danger` class on the primary button auto-renders the red
+ * destructive variant Carbon expects. */
+
+/* Code snippet */
+.cds--snippet { background: var(--cds-layer-01, #f4f4f4); font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 0.875rem; }
+.cds--snippet--inline { display: inline-flex; align-items: center; padding: 0 0.5rem; gap: 0.25rem; }
+/* Single-line snippet: flex row of (scrollable container, copy button).
+ *
+ * Earlier version put `overflow-x: auto` and `white-space: nowrap` on the
+ * outer `.cds--snippet--single` and absolutely-positioned the copy button on
+ * top — but that makes long code scroll UNDER the button, with the right
+ * portion permanently hidden behind the button's hit-box until the user
+ * scrolls past it. Carbon's structure separates the two: the inner
+ * `.cds--snippet-container` carries the overflow, and the snippet itself is a
+ * flex row so the button sits beside (not above) the scrollable area.
+ *
+ * `min-inline-size: 0` on the container is required — flex children default
+ * to `min-width: auto` which prevents the scrollbar from ever kicking in. */
+.cds--snippet--single {
+	position: relative;
+	display: flex;
+	align-items: center;
+	padding-block: 0.5rem;
+	padding-inline-start: 0;
+	padding-inline-end: 2.5rem;
+}
+.cds--snippet--single .cds--snippet-container {
+	flex: 1 1 0;
+	min-inline-size: 0;
+	overflow-x: auto;
+	padding-inline-start: 1rem;
+	white-space: nowrap;
+}
+.cds--snippet--multi  { display: block; padding: 1rem; position: relative; padding-inline-end: 3rem; overflow-x: auto; }
+.cds--snippet--multi pre,
+.cds--snippet--single pre { margin: 0; }
+.cds--snippet-button {
+	background: transparent;
+	border: 0;
+	padding: 0.25rem;
+	cursor: pointer;
+	color: inherit;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+.cds--snippet--single .cds--snippet-button,
+.cds--snippet--multi  .cds--snippet-button {
+	position: absolute;
+	inset-block-start: 0.5rem;
+	inset-inline-end: 0.5rem;
+}
+.cds--snippet-button:hover { background: var(--cds-layer-hover-01, #e0e0e0); }
+.cds--snippet-button:focus,
+.cds--snippet-button:focus-visible { outline: 2px solid var(--cds-focus, #0f62fe); outline-offset: -2px; }
+.cds--snippet-button--copied { color: var(--cds-support-success, #24a148); }
+
+/* Data table.
+ *
+ * Carbon's compiled CSS covers the bulk of styling — table reset,
+ * size variants (--sm/--md/--lg/--xl), thead/tbody background tokens
+ * (--cds-layer / --cds-layer-accent), td bottom border colour, and the
+ * --zebra variant's `tr:nth-child(2n) { background: --cds-layer-accent }`
+ * rule. Re-stating those here was a Stage-0 mistake — particularly the
+ * `tr:nth-child(odd) { background: var(--cds-layer-02) }` rule, which
+ * in the white/g10 themes resolves to `#ffffff` (layer-02 IS white in
+ * light themes), wiping out Carbon's intended `#f4f4f4` row tone.
+ *
+ * Only keep here the bits Carbon doesn't ship:
+ *   - Container overflow (horizontal scroll on small viewports)
+ *   - Caption (Carbon's CSS doesn't style caption when used outside
+ *     `.cds--data-table-header`)
+ *   - Sticky-header positioning (Carbon only handles the layout if you
+ *     also use their JS-driven `cds--data-table-container--sticky-header`
+ *     scaffolding; ours is plain HTML, so we provide the position rule)
+ *   - Sort icon rotation on descending (Carbon expects a different DOM
+ *     for that — we use a single icon and rotate it).
+ */
+.cds--data-table-container { display: block; overflow-x: auto; }
+
+.cds--data-table caption {
+	caption-side: top;
+	text-align: start;
+	padding: 0.5rem 1rem;
+	font-weight: 600;
+}
+
+/* Sticky header. Carbon's real sticky-header reflows the table into flex
+ * scaffolding (thead/tbody become flex + independent scroll); we keep plain
+ * <table> markup, so we make the CONTAINER the vertical scroll area and pin the
+ * header cells to its top. Two things are essential and were missing before, so
+ * the toggle did nothing:
+ *   1. The container needs a BOUNDED height — without a max-height there's no
+ *      vertical overflow, the page scrolls instead of the container, and a
+ *      sticky <thead> has nothing to stick within.
+ *   2. The pinned header cells need an OPAQUE background (Carbon's header color
+ *      is `--cds-layer-accent`) so body rows don't show through underneath as
+ *      they scroll past.
+ * Sticky is applied to the <th> cells (broadest browser support) rather than
+ * the <thead>. */
+.cds--data-table-container--sticky-header {
+	max-block-size: 24rem;
+	overflow: auto;
+}
+.cds--data-table-container--sticky-header thead {
+	position: sticky;
+	inset-block-start: 0;
+	z-index: 1;
+}
+.cds--data-table-container--sticky-header thead th {
+	background-color: var(--cds-layer-accent, #e0e0e0);
+}
+
+/* Sort icon rotation. Carbon's reference component swaps icons between
+ * ascending/descending; we ship one icon and rotate it for descending. */
+[aria-sort="descending"] .cds--table-sort__icon { transform: rotate(180deg); }
+
+/* XL header alignment fix.
+ *
+ * Carbon's spec (from the data-table docs):
+ *   "Column header and row text is always centered in the row with the
+ *    exception of the extra large which is offset by padding-top: 16px."
+ *
+ * Carbon's compiled CSS sets `padding-block: 1rem` on
+ * `.cds--data-table--xl .cds--table-header-label` to satisfy this, but
+ * leaves the label as `display: inline` (browser default for <span>).
+ * Padding on an inline element doesn't shift its text within the parent
+ * cell's vertical-align: top line box — so the header text rendered at
+ * the top of the cell (0px) while body cells (with their own padding-top:
+ * 16px on the <td>) rendered correctly at 16px. Net effect: a 16px
+ * vertical mis-shift between header text and body text in XL rows.
+ *
+ * Switching the label to `display: block` makes the padding-top behave
+ * as expected — text now sits 16px from the cell top, aligned with body
+ * cell text. Matches Carbon's documented XL offset spec. */
+.cds--data-table--xl .cds--table-header-label {
+	display: block;
+}
+
+/* ============================================================
+ * Highlight format (<mark>) — match the editor's appearance
+ * ============================================================
+ *
+ * WordPress's Highlight format wraps text in <mark>. Browsers paint <mark>
+ * with a default yellow background, and core ships NO front-end rule to
+ * neutralize it — so a highlight where the author chose only a TEXT color
+ * (class: has-inline-color, no background class/style) shows an unexpected
+ * yellow background on the published page while looking correct in the
+ * editor canvas (which suppresses the default).
+ *
+ * Author-chosen highlight backgrounds still win: palette choices emit
+ * .has-{slug}-background-color rules with !important (theme.json presets),
+ * and custom colors arrive as inline style — both beat this rule.
+ * Plain <mark> without the Highlight classes (e.g. pasted content) keeps
+ * the browser default, which remains a visible, readable highlight in both
+ * light and dark scopes. */
+mark.has-inline-color {
+	background-color: transparent;
+}

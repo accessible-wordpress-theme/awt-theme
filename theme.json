@@ -1,0 +1,216 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": false,
+		"useRootPaddingAwareAlignments": true,
+		"layout": {
+			"contentSize": "1056px",
+			"wideSize": "1312px"
+		},
+		"color": {
+			"custom": true,
+			"customDuotone": false,
+			"customGradient": false,
+			"defaultGradients": false,
+			"defaultPalette": false,
+			"link": true,
+			"text": true,
+			"background": true,
+			"palette": [
+				{ "slug": "background",         "name": "Background",         "color": "#ffffff" },
+				{ "slug": "layer-01",           "name": "Layer 01",           "color": "#f4f4f4" },
+				{ "slug": "layer-02",           "name": "Layer 02",           "color": "#ffffff" },
+				{ "slug": "layer-03",           "name": "Layer 03",           "color": "#f4f4f4" },
+				{ "slug": "field-01",           "name": "Field 01",           "color": "#f4f4f4" },
+				{ "slug": "field-02",           "name": "Field 02",           "color": "#ffffff" },
+				{ "slug": "field-03",           "name": "Field 03",           "color": "#f4f4f4" },
+				{ "slug": "text-primary",       "name": "Text primary",       "color": "#161616" },
+				{ "slug": "text-secondary",     "name": "Text secondary",     "color": "#525252" },
+				{ "slug": "text-placeholder",   "name": "Text placeholder",   "color": "#a8a8a8" },
+				{ "slug": "text-helper",        "name": "Text helper",        "color": "#6f6f6f" },
+				{ "slug": "text-error",         "name": "Text error",         "color": "#da1e28" },
+				{ "slug": "text-inverse",       "name": "Text inverse",       "color": "#ffffff" },
+				{ "slug": "text-on-color",      "name": "Text on color",      "color": "#ffffff" },
+				{ "slug": "text-disabled",      "name": "Text disabled",      "color": "#16161640" },
+				{ "slug": "link-primary",       "name": "Link primary",       "color": "#0f62fe" },
+				{ "slug": "link-secondary",     "name": "Link secondary",     "color": "#0043ce" },
+				{ "slug": "link-visited",       "name": "Link visited",       "color": "#8a3ffc" },
+				{ "slug": "link-inverse",       "name": "Link inverse",       "color": "#78a9ff" },
+				{ "slug": "border-subtle",      "name": "Border subtle",      "color": "#e0e0e0" },
+				{ "slug": "border-strong",      "name": "Border strong",      "color": "#8d8d8d" },
+				{ "slug": "border-inverse",     "name": "Border inverse",     "color": "#161616" },
+				{ "slug": "border-interactive", "name": "Border interactive", "color": "#0f62fe" },
+				{ "slug": "focus",              "name": "Focus",              "color": "#0f62fe" },
+				{ "slug": "focus-inset",        "name": "Focus inset",        "color": "#ffffff" },
+				{ "slug": "focus-inverse",      "name": "Focus inverse",      "color": "#ffffff" },
+				{ "slug": "interactive",        "name": "Interactive",        "color": "#0f62fe" },
+				{ "slug": "support-error",      "name": "Support error",      "color": "#da1e28" },
+				{ "slug": "support-success",    "name": "Support success",    "color": "#24a148" },
+				{ "slug": "support-warning",    "name": "Support warning",    "color": "#f1c21b" },
+				{ "slug": "support-info",       "name": "Support info",       "color": "#0043ce" },
+				{ "slug": "button-primary",            "name": "Button primary",            "color": "#0f62fe" },
+				{ "slug": "button-secondary",          "name": "Button secondary",          "color": "#393939" },
+				{ "slug": "button-tertiary",           "name": "Button tertiary",           "color": "#0f62fe" },
+				{ "slug": "button-danger-primary",     "name": "Button danger primary",     "color": "#da1e28" },
+				{ "slug": "button-danger-secondary",   "name": "Button danger secondary",   "color": "#da1e28" },
+				{ "slug": "button-disabled",           "name": "Button disabled",           "color": "#c6c6c6" }
+			]
+		},
+		"typography": {
+			"customFontSize": false,
+			"dropCap": false,
+			"fluid": false,
+			"fontFamilies": [
+				{
+					"slug": "plex-sans",
+					"name": "IBM Plex Sans",
+					"fontFamily": "'IBM Plex Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+					"fontFace": [
+						{ "fontFamily": "IBM Plex Sans", "fontStyle": "normal", "fontWeight": "300", "src": [ "file:./assets/fonts/IBMPlexSans-Light.woff2" ] },
+						{ "fontFamily": "IBM Plex Sans", "fontStyle": "normal", "fontWeight": "400", "src": [ "file:./assets/fonts/IBMPlexSans-Regular.woff2" ] },
+						{ "fontFamily": "IBM Plex Sans", "fontStyle": "normal", "fontWeight": "600", "src": [ "file:./assets/fonts/IBMPlexSans-SemiBold.woff2" ] }
+					]
+				},
+				{
+					"slug": "plex-mono",
+					"name": "IBM Plex Mono",
+					"fontFamily": "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
+					"fontFace": [
+						{ "fontFamily": "IBM Plex Mono", "fontStyle": "normal", "fontWeight": "400", "src": [ "file:./assets/fonts/IBMPlexMono-Regular.woff2" ] }
+					]
+				},
+				{
+					"slug": "plex-serif",
+					"name": "IBM Plex Serif",
+					"fontFamily": "'IBM Plex Serif', Georgia, 'Times New Roman', serif",
+					"fontFace": [
+						{ "fontFamily": "IBM Plex Serif", "fontStyle": "normal", "fontWeight": "300", "fontDisplay": "optional", "src": [ "file:./assets/fonts/IBMPlexSerif-Light.woff2" ] },
+						{ "fontFamily": "IBM Plex Serif", "fontStyle": "normal", "fontWeight": "600", "fontDisplay": "optional", "src": [ "file:./assets/fonts/IBMPlexSerif-SemiBold.woff2" ] }
+					]
+				}
+			],
+			"fontSizes": [
+				{ "slug": "label-01",    "name": "Label 01",    "size": "0.75rem"  },
+				{ "slug": "helper-01",   "name": "Helper 01",   "size": "0.75rem"  },
+				{ "slug": "body-01",     "name": "Body 01",     "size": "0.875rem" },
+				{ "slug": "body-02",     "name": "Body 02",     "size": "1rem"     },
+				{ "slug": "heading-01",  "name": "Heading 01",  "size": "0.875rem" },
+				{ "slug": "heading-02",  "name": "Heading 02",  "size": "1rem"     },
+				{ "slug": "heading-03",  "name": "Heading 03",  "size": "1.25rem"  },
+				{ "slug": "heading-04",  "name": "Heading 04",  "size": "1.75rem"  },
+				{ "slug": "heading-05",  "name": "Heading 05",  "size": "2rem"     },
+				{ "slug": "heading-06",  "name": "Heading 06",  "size": "2.625rem" },
+				{ "slug": "heading-07",  "name": "Heading 07",  "size": "3.375rem" },
+				{ "slug": "display-01",  "name": "Display 01",  "size": "2.625rem" },
+				{ "slug": "display-02",  "name": "Display 02",  "size": "3.375rem" },
+				{ "slug": "display-03",  "name": "Display 03",  "size": "3.75rem"  },
+				{ "slug": "display-04",  "name": "Display 04",  "size": "5.25rem"  }
+			]
+		},
+		"spacing": {
+			"blockGap": "1rem",
+			"customSpacingSize": false,
+			"units": [ "px", "rem", "%" ],
+			"spacingSizes": [
+				{ "slug": "01", "name": "Spacing 01", "size": "0.125rem" },
+				{ "slug": "02", "name": "Spacing 02", "size": "0.25rem"  },
+				{ "slug": "03", "name": "Spacing 03", "size": "0.5rem"   },
+				{ "slug": "04", "name": "Spacing 04", "size": "0.75rem"  },
+				{ "slug": "05", "name": "Spacing 05", "size": "1rem"     },
+				{ "slug": "06", "name": "Spacing 06", "size": "1.5rem"   },
+				{ "slug": "07", "name": "Spacing 07", "size": "2rem"     },
+				{ "slug": "08", "name": "Spacing 08", "size": "2.5rem"   },
+				{ "slug": "09", "name": "Spacing 09", "size": "3rem"     },
+				{ "slug": "10", "name": "Spacing 10", "size": "4rem"     },
+				{ "slug": "11", "name": "Spacing 11", "size": "5rem"     },
+				{ "slug": "12", "name": "Spacing 12", "size": "6rem"     },
+				{ "slug": "13", "name": "Spacing 13", "size": "10rem"    }
+			]
+		},
+		"custom": {
+			"breakpoints": {
+				"sm":  "320px",
+				"md":  "672px",
+				"lg":  "1056px",
+				"xl":  "1312px",
+				"max": "1584px"
+			},
+			"ui-shell": {
+				"themeScope": {
+					"light": "white",
+					"dark": "g100"
+				},
+				"colorScheme": {
+					"default": "light",
+					"honorSystemPreference": true,
+					"allowVisitorOverride": true
+				},
+				"header": {
+					"position": "sticky",
+					"height": "default",
+					"themeScope": "inherit"
+				},
+				"sideNav": {
+					"mode": "persistent",
+					"width": "16rem",
+					"railWidth": "3rem",
+					"collapseBreakpoint": "672px"
+				},
+				"content": {
+					"maxWidth": "66rem",
+					"padding": {
+						"block": "2rem",
+						"inline": "1rem"
+					}
+				},
+				"footer": {
+					"themeScope": "dark"
+				}
+			}
+		}
+	},
+	"styles": {
+		"color": {
+			"background": "var(--wp--preset--color--background)",
+			"text": "var(--wp--preset--color--text-primary)"
+		},
+		"typography": {
+			"fontFamily": "var(--wp--preset--font-family--plex-sans)",
+			"fontSize": "var(--wp--preset--font-size--body-02)",
+			"lineHeight": "1.5"
+		},
+		"spacing": {
+			"blockGap": "1rem",
+			"padding": {
+				"top":    "0",
+				"right":  "var(--wp--preset--spacing--05)",
+				"bottom": "0",
+				"left":   "var(--wp--preset--spacing--05)"
+			}
+		},
+		"elements": {
+			"link": {
+				"color": { "text": "var(--wp--preset--color--link-primary)" }
+			},
+			"h1": { "typography": { "fontSize": "var(--wp--preset--font-size--heading-06)", "fontWeight": "300", "lineHeight": "1.199" } },
+			"h2": { "typography": { "fontSize": "var(--wp--preset--font-size--heading-05)", "fontWeight": "300", "lineHeight": "1.25" } },
+			"h3": { "typography": { "fontSize": "var(--wp--preset--font-size--heading-04)", "fontWeight": "400", "lineHeight": "1.28572" } },
+			"h4": { "typography": { "fontSize": "var(--wp--preset--font-size--heading-03)", "fontWeight": "400", "lineHeight": "1.4" } },
+			"h5": { "typography": { "fontSize": "var(--wp--preset--font-size--heading-02)", "fontWeight": "600", "lineHeight": "1.5" } },
+			"h6": { "typography": { "fontSize": "var(--wp--preset--font-size--heading-01)", "fontWeight": "600", "lineHeight": "1.42857" } }
+		}
+	},
+	"templateParts": [
+		{ "name": "header",  "area": "header", "title": "Header" },
+		{ "name": "footer",  "area": "footer", "title": "Footer" },
+		{ "name": "sidebar", "area": "uncategorized", "title": "Side navigation" }
+	],
+	"customTemplates": [
+		{
+			"name": "page-no-title",
+			"title": "Page without title",
+			"postTypes": [ "page" ]
+		}
+	]
+}

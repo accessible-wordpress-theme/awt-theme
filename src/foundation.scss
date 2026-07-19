@@ -1,0 +1,51 @@
+// AWT foundation stylesheet — the always-loaded Carbon subset.
+//
+// Replaces the full carbon.min.css (800 KB raw / 82 KB gz) with only the
+// partials every page needs; per-component CSS ships with each block from
+// the awt-blocks plugin (block.json `style`, loaded only when the block
+// renders). See the Stage 1 spec, "CSS tree-shaking + per-block CSS
+// architecture", for the contract and the CI check that guards this list.
+//
+// Fonts are deliberately NOT emitted here: IBM Plex loads locally through
+// theme.json (assets/fonts/*.woff2). Carbon's scss/fonts partial points at
+// IBM's CDN, which would break AWT's fully-offline posture.
+//
+// Build: npm run build:css  →  assets/css/foundation.min.css
+
+@use '@carbon/styles/scss/config' with (
+	$css--font-face: false,
+	$css--default-type: true,
+	$css--reset: true,
+	$use-flexbox-grid: false
+);
+
+// Reset + base element styles.
+@use '@carbon/styles/scss/reset';
+
+// Token system: :root gets the default (white) theme; the four zone classes
+// (.cds--white / .cds--g10 / .cds--g90 / .cds--g100) re-scope tokens so the
+// style variations and per-section themeScope overrides work.
+@use '@carbon/styles/scss/theme';
+@use '@carbon/styles/scss/zone';
+
+// Type scale classes + defaults (no @font-face — see header comment).
+@use '@carbon/styles/scss/type';
+
+// Spacing custom properties (--cds-spacing-01 … -13).
+@use '@carbon/styles/scss/spacing';
+
+// Layout tokens (container/density) some components read.
+@use '@carbon/styles/scss/layout';
+
+// UI shell: header, side navigation, content area — the site chrome the
+// theme's templates render on every page (header/footer template parts,
+// skip link, side-nav).
+@use '@carbon/styles/scss/components/ui-shell';
+
+// Links: the footer template part (site chrome, every page) renders
+// cds--link markup via awt/footer-link, so link styles are foundation.
+@use '@carbon/styles/scss/components/link';
+
+// The skeleton of interactive states several always-present shell pieces
+// share (focus outlines, assistive text) lives in the utilities emitted by
+// the partials above; blocks bring their own component CSS.
